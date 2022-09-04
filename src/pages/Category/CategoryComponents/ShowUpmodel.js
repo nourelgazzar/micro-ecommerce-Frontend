@@ -119,7 +119,7 @@ const ShowUpModel = (props) => {
                     }}
                   />
                 </IconButton> */}
-                <LoadingButton loading={isSubmitting}>
+                <LoadingButton loading={isSubmitting} type="submit" variant="contained">
                   {' '}
                   <AddCircleOutlineIcon />
                 </LoadingButton>
