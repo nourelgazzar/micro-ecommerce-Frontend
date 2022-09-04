@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import CloseIcon from '@mui/icons-material/Close';
+import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
 
 import { Modal } from '@material-ui/core';
 
@@ -20,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const ShowUpModel = (props) => {
-  const [open, setopen] = useState(true);
   const classes = useStyles();
 
   return (
@@ -42,7 +43,28 @@ const ShowUpModel = (props) => {
           alignItems: 'center',
         }}
       >
-        <div className={classes.modal}> </div>
+        <div className={classes.modal}>
+          <div style={{ marginTop: '5%', textAlign: 'right', marginRight: 20 }}>
+            <IconButton
+              sx={{
+                size: 'small',
+                color: 'primary',
+                width: 30,
+                height: 30,
+              }}
+              onClick={() => {
+                props.setopen(false);
+              }}
+            >
+              <CloseIcon
+                sx={{
+                  color: 'black',
+                  fontSize: 13,
+                }}
+              />
+            </IconButton>{' '}
+          </div>
+        </div>
       </div>
     </Modal>
   );

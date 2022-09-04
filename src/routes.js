@@ -10,7 +10,7 @@ import NotFound from './pages/Page404';
 import Register from './pages/Register';
 import Products from './pages/Products';
 import DashboardApp from './pages/DashboardApp';
-import Category from './pages/Category';
+import Category from './pages/Category/Category';
 
 // ----------------------------------------------------------------------
 

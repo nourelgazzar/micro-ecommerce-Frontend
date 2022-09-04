@@ -11,7 +11,6 @@ import Paper from '@mui/material/Paper';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
-import ShowPopUp from './ShowModelPopUp';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -33,20 +32,15 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(name: string, calories: number, fat: number, carbs: number, protein: number) {
-  return { name, calories, fat, carbs, protein };
-}
+// function createData(name: string, calories: number, fat: number, carbs: number, protein: number) {
+//   return { name, calories, fat, carbs, protein };
+// }
 
 const rows = ['Frozen yoghurt', 'Ice cream sandwich', 'Eclair', 'Cupcake', 'Gingerbread'];
 
 export default function CustomizedTables(props) {
-  const [open, setopen] = useState(false);
-
-  const setOpenTrue = () => {
-    setopen(true);
-  };
   return (
-    <TableContainer component={Paper} sx={{ width: '60vw' }} className={props.className}>
+    <TableContainer component={Paper} sx={{ width: '75vw' }} className={props.className}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
@@ -63,21 +57,27 @@ export default function CustomizedTables(props) {
               </StyledTableCell>
               <StyledTableCell align="right">
                 {' '}
-                <IconButton onClick={setOpenTrue}>
+                <IconButton
+                  onClick={() => {
+                    props.setopen(true);
+                  }}
+                >
                   {' '}
                   <EditIcon />
                 </IconButton>
-                <IconButton>
+                <IconButton
+                  onClick={() => {
+                    props.setopen(true);
+                  }}
+                >
                   {' '}
-                  <DeleteIcon onClick={setOpenTrue} />
+                  <DeleteIcon />
                 </IconButton>
               </StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
       </Table>
-
-      <ShowPopUp open={open} />
     </TableContainer>
   );
 }
