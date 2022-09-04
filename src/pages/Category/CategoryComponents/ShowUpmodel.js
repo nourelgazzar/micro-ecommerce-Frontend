@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 // form
 import { useForm } from 'react-hook-form';
@@ -7,13 +7,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@material-ui/core';
 import Divider from '@mui/material/Divider';
-
+import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
 import { Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { LoadingButton } from '@mui/lab';
+import Button from '../../../components/Button';
 
-import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
+import CategoryDiv from './CategoryDiv';
+// import Button from '../../../components/Button';
 
 const useStyles = makeStyles((theme) => ({
   layoutRoot: {},
@@ -25,21 +27,48 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#FFFAFA',
     marginTop: '20%',
     borderRadius: 20,
-    width: 600,
+    width: 650,
     height: '30vw !important',
     borderWidth: 3,
     borderColor: '#252F3E',
   },
   textFieldDiv: {
     width: '20vw',
-    marginLeft: '3vw !important',
+    marginLeft: '3.5vw !important',
     display: 'flex',
     marginTop: '2vw',
+  },
+  newCat: {
+    width: '100%',
+    display: 'flex',
+    height: 250,
+    borderRadius: 20,
+
+    overflow: 'auto',
+    flexWrap: 'wrap',
+  },
+  categorydiv: {
+    marginLeft: 5,
   },
 }));
 const ShowUpModel = (props) => {
   const classes = useStyles();
-  console.log(props.open, 'a');
+  const [categories, setcategories] = useState([]);
+  const [category, setcategory] = useState('');
+  const [deleteCheck, setdeleteCheck] = useState(false);
+  const [deleteID, setdeleteID] = useState(0);
+
+  console.log(categories, 'cattttttttttt');
+
+  const addnewCategory = () => {
+    console.log(category, 'CATTTTTTTTTTTT');
+    const length = categories.length;
+    const object = { name: { category }, id: length + 1 };
+    console.log(object, 'ONJECTTTTTTTT');
+    let array = categories;
+    array = array.push(object);
+    setcategory(array);
+  };
 
   const CategorySchema = Yup.object().shape({
     category: Yup.string().required('Category is required'),
@@ -63,6 +92,15 @@ const ShowUpModel = (props) => {
   const onSubmit = async () => {
     // navigate('/dashboard', { replace: true });
   };
+
+  useEffect(() => {
+    if (deleteCheck === true) {
+      const newar = categories.filter((item) => !(item.id === deleteID));
+      console.log(newar, 'newwwwwwwwwww');
+      setcategories(newar);
+    }
+    setdeleteCheck(false);
+  }, [deleteCheck, categories]);
 
   return (
     <Modal
@@ -104,21 +142,32 @@ const ShowUpModel = (props) => {
               />
             </IconButton>{' '}
           </div>
-          <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+          <div>
             <Stack>
               <Typography sx={{ marginLeft: '-20vw' }} variant="h4">
                 Add Categories
               </Typography>
               <div className={classes.textFieldDiv}>
-                <RHFTextField name="Category" label="Category" />
-                {/* <IconButton type="submit">
+                <TextField
+                  name="Category"
+                  label="Category"
+                  onChange={(e) => {
+                    setcategory(e.target.value);
+                  }}
+                />
+                <IconButton
+                  type="submit"
+                  onClick={() => {
+                    addnewCategory();
+                  }}
+                >
                   <AddCircleOutlineIcon
                     sx={{
                       width: 30,
                       height: 30,
                     }}
                   />
-                </IconButton> */}
+                </IconButton>
                 <LoadingButton loading={isSubmitting} type="submit" variant="contained">
                   {' '}
                   <AddCircleOutlineIcon />
@@ -126,11 +175,22 @@ const ShowUpModel = (props) => {
               </div>
               <Divider sx={{ marginTop: '1vw', marginLeft: '0.5vw', width: '38vw' }} />
             </Stack>
-
-            {/* <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
-              Login
-            </LoadingButton> */}
-          </FormProvider>
+            <div className={classes.newCat}>
+              {categories.map((item) => (
+                <div className={classes.categorydiv}>
+                  <CategoryDiv
+                    text={item.name.category}
+                    id={item.id}
+                    setdeleteID={setdeleteID}
+                    setdeleteCheck={setdeleteCheck}
+                  />
+                </div>
+              ))}
+            </div>
+            <div>
+              <Button text={'Add Category'} />
+            </div>
+          </div>
         </div>
       </div>
     </Modal>

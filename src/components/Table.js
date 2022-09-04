@@ -40,7 +40,7 @@ const rows = ['Frozen yoghurt', 'Ice cream sandwich', 'Eclair', 'Cupcake', 'Ging
 
 export default function CustomizedTables(props) {
   return (
-    <TableContainer component={Paper} sx={{ width: '75vw' }} className={props.className}>
+    <TableContainer component={Paper} sx={{ width: '75vw', fontSize: 3 }} className={props.className}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
