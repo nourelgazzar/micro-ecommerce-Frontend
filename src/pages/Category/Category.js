@@ -16,6 +16,8 @@ export default function Category() {
   const classes = useStyles();
   const [openShowUpModelDelete, setopenShowUpModelDelete] = useState(false);
   const [openShowUpModelAddEdit, setopenShowUpModelAddEdit] = useState(false);
+  const [finalCategoriesArray, setfinalCategoriesArray] = useState([]);
+  const [height, setheight] = useState(250);
 
   return (
     <Page title="Dashboard: Categories">
@@ -41,7 +43,14 @@ export default function Category() {
 
         {/* <Table className={classes.table} /> */}
         {/* <ShowUpModel open={openShowUpModelDelete} setopen={setopenShowUpModelDelete} /> */}
-        <ShowUpModelAdd open={openShowUpModelAddEdit} setopen={setopenShowUpModelAddEdit} />
+        <ShowUpModelAdd
+          open={openShowUpModelAddEdit}
+          setopen={setopenShowUpModelAddEdit}
+          finalCategoriesArray={finalCategoriesArray}
+          height={height}
+          setheight={setheight}
+          setfinalCategoriesArray={setfinalCategoriesArray}
+        />
       </Container>
     </Page>
   );

@@ -25,10 +25,10 @@ const useStyles = makeStyles((theme) => ({
   },
   modal: {
     backgroundColor: '#FFFAFA',
+    height: (props) => props.height,
     marginTop: '20%',
     borderRadius: 20,
     width: 650,
-    height: '30vw !important',
     borderWidth: 3,
     borderColor: '#252F3E',
   },
@@ -49,25 +49,31 @@ const useStyles = makeStyles((theme) => ({
   },
   categorydiv: {
     marginLeft: 5,
+    marginTop: '5%',
   },
+  buttonAddCategory: { marginTop: '2%', textAlign: 'right', marginRight: 30 },
 }));
 const ShowUpModel = (props) => {
-  const classes = useStyles();
+  const classes = useStyles(props);
   const [categories, setcategories] = useState([]);
   const [category, setcategory] = useState('');
   const [deleteCheck, setdeleteCheck] = useState(false);
   const [deleteID, setdeleteID] = useState(0);
 
-  console.log(categories, 'cattttttttttt');
-
   const addnewCategory = () => {
-    console.log(category, 'CATTTTTTTTTTTT');
-    const length = categories.length;
-    const object = { name: { category }, id: length + 1 };
-    console.log(object, 'ONJECTTTTTTTT');
-    let array = categories;
-    array = array.push(object);
-    setcategory(array);
+    console.log(categories, 'in add');
+    const array = categories;
+
+    for (let i = 0; i < array.length; i += 1) {
+      console.log(array[i], 1);
+      array[i].id = i;
+    }
+    const length = array.length;
+    const object = { name: { category }, id: length };
+    array[length] = object;
+    console.log(array, 'ALLLLLLLLLLLLL');
+    setcategories(array);
+    setcategory('');
   };
 
   const CategorySchema = Yup.object().shape({
@@ -94,12 +100,20 @@ const ShowUpModel = (props) => {
   };
 
   useEffect(() => {
+    console.log(categories, 'before delete');
+
     if (deleteCheck === true) {
+      console.log(deleteID, 'delete id');
       const newar = categories.filter((item) => !(item.id === deleteID));
-      console.log(newar, 'newwwwwwwwwww');
+      for (let i = 0; i < newar.length; i += 1) {
+        console.log(newar[i], 1);
+        newar[i].id = i;
+      }
       setcategories(newar);
     }
+    if (categories.length === 0) props.setheight(250);
     setdeleteCheck(false);
+    console.log(categories, 'after delete');
   }, [deleteCheck, categories]);
 
   return (
@@ -144,14 +158,16 @@ const ShowUpModel = (props) => {
           </div>
           <div>
             <Stack>
-              <Typography sx={{ marginLeft: '-20vw' }} variant="h4">
+              <Typography sx={{ marginLeft: '-24vw' }} variant="h4">
                 Add Categories
               </Typography>
               <div className={classes.textFieldDiv}>
                 <TextField
                   name="Category"
                   label="Category"
+                  value={category}
                   onChange={(e) => {
+                    props.setheight(500);
                     setcategory(e.target.value);
                   }}
                 />
@@ -168,13 +184,15 @@ const ShowUpModel = (props) => {
                     }}
                   />
                 </IconButton>
-                <LoadingButton loading={isSubmitting} type="submit" variant="contained">
-                  {' '}
-                  <AddCircleOutlineIcon />
-                </LoadingButton>
               </div>
-              <Divider sx={{ marginTop: '1vw', marginLeft: '0.5vw', width: '38vw' }} />
+              <div className={classes.buttonAddCategory}>
+                {categories.length > 0 && (
+                  <Button text={'Add Category'} icon={AddCircleOutlineIcon} onClick={() => {}} />
+                )}
+              </div>
+              <Divider sx={{ marginTop: '1vw', marginLeft: '0.5vw', width: 640 }} />
             </Stack>
+
             <div className={classes.newCat}>
               {categories.map((item) => (
                 <div className={classes.categorydiv}>
@@ -187,9 +205,7 @@ const ShowUpModel = (props) => {
                 </div>
               ))}
             </div>
-            <div>
-              <Button text={'Add Category'} />
-            </div>
+            <div>{/* <Button text={'Add Category'} /> */}</div>
           </div>
         </div>
       </div>
