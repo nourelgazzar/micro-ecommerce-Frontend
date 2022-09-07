@@ -85,17 +85,6 @@ export default function ShopFilterSidebar({ isOpenFilter, onOpenFilter, onCloseF
           <Stack spacing={3} sx={{ p: 3 }}>
             <div>
               <Typography variant="subtitle1" gutterBottom>
-                Gender
-              </Typography>
-              <FormGroup>
-                {FILTER_GENDER_OPTIONS.map((item) => (
-                  <FormControlLabel key={item} control={<Checkbox />} label={item} />
-                ))}
-              </FormGroup>
-            </div>
-
-            <div>
-              <Typography variant="subtitle1" gutterBottom>
                 Category
               </Typography>
               <RadioGroup>
@@ -107,55 +96,11 @@ export default function ShopFilterSidebar({ isOpenFilter, onOpenFilter, onCloseF
 
             <div>
               <Typography variant="subtitle1" gutterBottom>
-                Colors
-              </Typography>
-              <ColorManyPicker
-                name="colors"
-                colors={FILTER_COLOR_OPTIONS}
-                onChecked={(color) => [].includes(color)}
-                sx={{ maxWidth: 38 * 4 }}
-              />
-            </div>
-
-            <div>
-              <Typography variant="subtitle1" gutterBottom>
                 Price
               </Typography>
               <RadioGroup>
                 {FILTER_PRICE_OPTIONS.map((item) => (
                   <FormControlLabel key={item.value} value={item.value} control={<Radio />} label={item.label} />
-                ))}
-              </RadioGroup>
-            </div>
-
-            <div>
-              <Typography variant="subtitle1" gutterBottom>
-                Rating
-              </Typography>
-              <RadioGroup>
-                {FILTER_RATING_OPTIONS.map((item, index) => (
-                  <FormControlLabel
-                    key={item}
-                    value={item}
-                    control={
-                      <Radio
-                        disableRipple
-                        color="default"
-                        icon={<Rating readOnly value={4 - index} />}
-                        checkedIcon={<Rating readOnly value={4 - index} />}
-                      />
-                    }
-                    label="& Up"
-                    sx={{
-                      my: 0.5,
-                      borderRadius: 1,
-                      '& > :first-of-type': { py: 0.5 },
-                      '&:hover': {
-                        opacity: 0.48,
-                        '& > *': { bgcolor: 'transparent' },
-                      },
-                    }}
-                  />
                 ))}
               </RadioGroup>
             </div>
