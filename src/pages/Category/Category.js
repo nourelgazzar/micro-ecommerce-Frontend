@@ -22,7 +22,7 @@ export default function Category() {
   return (
     <Page title="Dashboard: Categories">
       <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap-reverse" mb={5}>
           <Typography variant="h4" gutterBottom>
             Categories
           </Typography>

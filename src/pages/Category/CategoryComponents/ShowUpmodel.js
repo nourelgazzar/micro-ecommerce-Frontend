@@ -12,11 +12,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { LoadingButton } from '@mui/lab';
+import { RHFTextField } from '../../../components/hook-form';
 import Button from '../../../components/Button';
 
 import CategoryDiv from './CategoryDiv';
 // import Button from '../../../components/Button';
 
+let count = 1;
 const useStyles = makeStyles((theme) => ({
   layoutRoot: {},
   formControl: {
@@ -60,62 +62,36 @@ const ShowUpModel = (props) => {
   const [deleteCheck, setdeleteCheck] = useState(false);
   const [deleteID, setdeleteID] = useState(0);
 
-  const addnewCategory = () => {
-    console.log(categories, 'in add');
-    const array = categories;
-
-    for (let i = 0; i < array.length; i += 1) {
-      console.log(array[i], 1);
-      array[i].id = i;
-    }
-    const length = array.length;
-    const object = { name: { category }, id: length };
-    array[length] = object;
-    console.log(array, 'ALLLLLLLLLLLLL');
-    setcategories(array);
-    setcategory('');
-  };
-
   const CategorySchema = Yup.object().shape({
-    category: Yup.string().required('Category is required'),
-  });
-
-  const defaultValues = {
-    category: '',
-    remember: true,
-  };
-
-  const methods = useForm({
-    resolver: yupResolver(CategorySchema),
-    defaultValues,
+    Category: Yup.string().max(40).required(),
   });
 
   const {
+    register,
     handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(CategorySchema) });
 
-  const onSubmit = async () => {
-    // navigate('/dashboard', { replace: true });
+  const addnewCategory = (data) => {
+    props.setheight(500);
+    setcategories([...categories, { category: data.Category, id: count }]);
+    setcategory('');
+    count += 1;
   };
 
   useEffect(() => {
-    console.log(categories, 'before delete');
-
     if (deleteCheck === true) {
-      console.log(deleteID, 'delete id');
       const newar = categories.filter((item) => !(item.id === deleteID));
       for (let i = 0; i < newar.length; i += 1) {
-        console.log(newar[i], 1);
         newar[i].id = i;
       }
       setcategories(newar);
     }
     if (categories.length === 0) props.setheight(250);
     setdeleteCheck(false);
-    console.log(categories, 'after delete');
   }, [deleteCheck, categories]);
 
+  console.log({ categories });
   return (
     <Modal
       disablePortal
@@ -158,23 +134,26 @@ const ShowUpModel = (props) => {
           </div>
           <div>
             <Stack>
-              <Typography sx={{ marginLeft: '-24vw' }} variant="h4">
+              <Typography sx={{ marginLeft: '-56%' }} variant="h4">
                 Add Categories
               </Typography>
               <div className={classes.textFieldDiv}>
                 <TextField
                   name="Category"
                   label="Category"
-                  value={category}
+                  // value={category}
+
                   onChange={(e) => {
                     props.setheight(500);
                     setcategory(e.target.value);
                   }}
+                  {...register('Category', { required: true })}
                 />
+
                 <IconButton
                   type="submit"
-                  onClick={() => {
-                    addnewCategory();
+                  onClick={(e) => {
+                    handleSubmit(addnewCategory)(e);
                   }}
                 >
                   <AddCircleOutlineIcon
@@ -185,6 +164,7 @@ const ShowUpModel = (props) => {
                   />
                 </IconButton>
               </div>
+              {errors.Category?.message}
               <div className={classes.buttonAddCategory}>
                 {categories.length > 0 && (
                   <Button text={'Add Category'} icon={AddCircleOutlineIcon} onClick={() => {}} />
@@ -197,10 +177,16 @@ const ShowUpModel = (props) => {
               {categories.map((item) => (
                 <div className={classes.categorydiv}>
                   <CategoryDiv
-                    text={item.name.category}
+                    text={item.category}
                     id={item.id}
                     setdeleteID={setdeleteID}
                     setdeleteCheck={setdeleteCheck}
+                    deleteItem={() => {
+                      const newCategories = categories.filter((temp) => {
+                        return temp.id !== item.id;
+                      });
+                      setcategories(newCategories);
+                    }}
                   />
                 </div>
               ))}

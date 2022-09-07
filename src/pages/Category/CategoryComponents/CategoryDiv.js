@@ -21,9 +21,9 @@ export default function CategoryDiv(props) {
   const classes = useStyles();
   const [id, setid] = useState(0);
 
-  useEffect(() => {
-    setid(props.id);
-  }, []);
+  // useEffect(() => {
+  //   setid(props.id);
+  // }, []);
 
   const setDelete = () => {
     props.setdeleteCheck(true);
@@ -53,7 +53,7 @@ export default function CategoryDiv(props) {
               height: 20,
             }}
             onClick={() => {
-              setDelete();
+              props.deleteItem();
             }}
           >
             <CloseIcon
