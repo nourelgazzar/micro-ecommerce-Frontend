@@ -63,9 +63,9 @@ export default function LoginForm() {
           .then((response) => {
             console.log('Response : ', response);
 
-            if (response && response.status === 201) {
+            if (response.status === 201) {
               localStorage.setItem('token', response.data.token);
-              navigate('/dashboard');
+              navigate('/dashboard/app');
               console.log('Response : ', response);
             }
           })
@@ -91,7 +91,6 @@ export default function LoginForm() {
           name="email"
           label="Email Address"
           onChange={(e) => {
-            console.log('ay haga');
             setEmail(e.target.value);
           }}
           {...register('email', { required: true })}
