@@ -1,7 +1,8 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container, Stack, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import axios from 'axios';
 
 import Page from '../../components/Page';
 import Table from '../../components/Table';
@@ -20,7 +21,30 @@ export default function Category() {
   const [openShowUpModelAddEdit, setopenShowUpModelAddEdit] = useState(false);
   const [finalCategoriesArray, setfinalCategoriesArray] = useState([]);
   const [height, setheight] = useState(250);
-
+  const token = '2|hpJg07BkSJEDixqhaGQlgf1SgJWqHO7leMjhuzvr';
+  // useEffect(() => {
+  //   const getData = () => {
+  //     axios
+  //       .get('http://localhost:8000/api/admin/categories', {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           'Access-Control-Allow-Origin': '*',
+  //           'Content-Type': 'multipart/form-data',
+  //           accept: 'application/json',
+  //         },
+  //       })
+  //       .then((respone) => {
+  //         console.log(respone, 'response');
+  //         const myData = respone.data[0];
+  //         console.log(respone.data[0]);
+  //         // setData(myData);
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //       });
+  //   };
+  //   getData();
+  // }, []);
   return (
     <Page title="Dashboard: Categories">
       <Container>
