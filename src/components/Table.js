@@ -44,7 +44,7 @@ export default function CustomizedTables(props) {
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell sx={{ fontSize: 16 }}>Category Name</StyledTableCell>
+            <StyledTableCell sx={{ fontSize: 16 }}>{props.text}</StyledTableCell>
 
             <StyledTableCell sx={{ fontSize: 16, marginRight: 20 }} align="right">
               Action

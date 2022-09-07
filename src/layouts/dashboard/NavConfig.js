@@ -1,4 +1,5 @@
 // component
+import TokenIcon from '@mui/icons-material/Token';
 import Iconify from '../../components/Iconify';
 
 // ----------------------------------------------------------------------
@@ -25,6 +26,11 @@ const navConfig = [
     title: 'category',
     path: '/dashboard/category',
     icon: getIcon('eva:file-text-fill'),
+  },
+  {
+    title: 'brand',
+    path: '/dashboard/brand',
+    icon: <TokenIcon />,
   },
   {
     title: 'login',

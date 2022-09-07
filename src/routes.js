@@ -11,6 +11,7 @@ import Register from './pages/Register';
 import Products from './pages/Products';
 import DashboardApp from './pages/DashboardApp';
 import Category from './pages/Category/Category';
+import Brand from './pages/Brand/Brand';
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +25,7 @@ export default function Router() {
         { path: 'user', element: <User /> },
         { path: 'products', element: <Products /> },
         { path: 'category', element: <Category /> },
+        { path: 'brand', element: <Brand /> },
       ],
     },
     {
