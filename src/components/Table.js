@@ -61,7 +61,8 @@ export default function CustomizedTables(props) {
                 {' '}
                 <IconButton
                   onClick={() => {
-                    props.setopen(true);
+                    props.setopenedit(true);
+                    props.setopeneditmodel(true);
                   }}
                 >
                   {' '}
@@ -69,7 +70,7 @@ export default function CustomizedTables(props) {
                 </IconButton>
                 <IconButton
                   onClick={() => {
-                    props.setopen(true);
+                    props.setopendelete(true);
                   }}
                 >
                   {' '}

@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function Brand() {
   const classes = useStyles();
+  const [openedit, setopenedit] = useState(false);
   const [openShowUpModelDelete, setopenShowUpModelDelete] = useState(false);
   const [openShowUpModelAddEdit, setopenShowUpModelAddEdit] = useState(false);
   const [finalBrandsArray, setfinalBrandsArray] = useState([]);
@@ -34,15 +35,19 @@ export default function Brand() {
             }}
           />
         </Stack>
-
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="center" sx={{ mb: 5 }}>
           <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-            <Table text="Brand Name" />
+            <Table
+              text="Brand Name"
+              opendelete={openShowUpModelDelete}
+              setopendelete={setopenShowUpModelDelete}
+              setopenedit={setopenedit}
+              setopeneditmodel={setopenShowUpModelAddEdit}
+            />
           </Stack>
         </Stack>
-
         {/* <Table className={classes.table} /> */}
-        {/* <ShowUpModel open={openShowUpModelDelete} setopen={setopenShowUpModelDelete} /> */}
+        <ShowUpModel open={openShowUpModelDelete} setopen={setopenShowUpModelDelete} />
         <ShowUpModelAdd
           open={openShowUpModelAddEdit}
           setopen={setopenShowUpModelAddEdit}
@@ -50,6 +55,8 @@ export default function Brand() {
           height={height}
           setheight={setheight}
           setfinalBrandsArray={setfinalBrandsArray}
+          setopenedit={setopenedit}
+          openedit={openedit}
         />
       </Container>
     </Page>

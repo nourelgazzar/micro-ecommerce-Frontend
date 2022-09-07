@@ -1,7 +1,8 @@
 import * as Yup from 'yup';
 import { useState, useEffect } from 'react';
+import { FamilyRestroomRounded } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-// form
+import { Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,10 +10,10 @@ import { Modal } from '@material-ui/core';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
-import { Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { LoadingButton } from '@mui/lab';
 import { RHFTextField } from '../../../components/hook-form';
+
 import Button from '../../../components/Button';
 
 import CategoryDiv from './CategoryDiv';
@@ -122,6 +123,7 @@ const ShowUpModel = (props) => {
               }}
               onClick={() => {
                 props.setopen(false);
+                props.setopenedit(false);
               }}
             >
               <CloseIcon
@@ -134,9 +136,17 @@ const ShowUpModel = (props) => {
           </div>
           <div>
             <Stack>
-              <Typography sx={{ marginLeft: '-56%' }} variant="h4">
-                Add Categories
-              </Typography>
+              {props.openedit ? (
+                <Typography sx={{ marginLeft: '-56%' }} variant="h4">
+                  {' '}
+                  Edit Category
+                </Typography>
+              ) : (
+                <Typography sx={{ marginLeft: '-56%' }} variant="h4">
+                  {' '}
+                  Add Category
+                </Typography>
+              )}
               <div className={classes.textFieldDiv}>
                 <TextField
                   name="Category"
@@ -150,24 +160,30 @@ const ShowUpModel = (props) => {
                   {...register('Category', { required: true })}
                 />
 
-                <IconButton
-                  type="submit"
-                  onClick={(e) => {
-                    handleSubmit(addnewCategory)(e);
-                  }}
-                >
-                  <AddCircleOutlineIcon
-                    sx={{
-                      width: 30,
-                      height: 30,
+                {!props.openedit && (
+                  <IconButton
+                    type="submit"
+                    onClick={(e) => {
+                      handleSubmit(addnewCategory)(e);
                     }}
-                  />
-                </IconButton>
+                  >
+                    <AddCircleOutlineIcon
+                      sx={{
+                        width: 30,
+                        height: 30,
+                      }}
+                    />
+                  </IconButton>
+                )}
               </div>
               {errors.Category?.message}
               <div className={classes.buttonAddCategory}>
-                {categories.length > 0 && (
-                  <Button text={'Add Category'} icon={AddCircleOutlineIcon} onClick={() => {}} />
+                {(categories.length > 0 || props.openedit) && (
+                  <Button
+                    text={props.openedit ? 'Edit Category' : 'Add Category'}
+                    icon={AddCircleOutlineIcon}
+                    onClick={() => {}}
+                  />
                 )}
               </div>
               <Divider sx={{ marginTop: '1vw', marginLeft: '0.5vw', width: 640 }} />

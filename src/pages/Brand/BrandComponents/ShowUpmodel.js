@@ -122,6 +122,7 @@ const ShowUpModel = (props) => {
               }}
               onClick={() => {
                 props.setopen(false);
+                props.setopenedit(false);
               }}
             >
               <CloseIcon
@@ -134,9 +135,17 @@ const ShowUpModel = (props) => {
           </div>
           <div>
             <Stack>
-              <Typography sx={{ marginLeft: '-56%' }} variant="h4">
-                Add brands
-              </Typography>
+              {props.openedit ? (
+                <Typography sx={{ marginLeft: '-56%' }} variant="h4">
+                  {' '}
+                  Edit Brand
+                </Typography>
+              ) : (
+                <Typography sx={{ marginLeft: '-56%' }} variant="h4">
+                  {' '}
+                  Add Brand
+                </Typography>
+              )}
               <div className={classes.textFieldDiv}>
                 <TextField
                   name="Brand"
@@ -150,23 +159,31 @@ const ShowUpModel = (props) => {
                   {...register('brand', { required: true })}
                 />
 
-                <IconButton
-                  type="submit"
-                  onClick={(e) => {
-                    handleSubmit(addnewbrand)(e);
-                  }}
-                >
-                  <AddCircleOutlineIcon
-                    sx={{
-                      width: 30,
-                      height: 30,
+                {!props.openedit && (
+                  <IconButton
+                    type="submit"
+                    onClick={(e) => {
+                      handleSubmit(addnewbrand)(e);
                     }}
-                  />
-                </IconButton>
+                  >
+                    <AddCircleOutlineIcon
+                      sx={{
+                        width: 30,
+                        height: 30,
+                      }}
+                    />
+                  </IconButton>
+                )}
               </div>
               {errors.brand?.message}
               <div className={classes.buttonAddbrand}>
-                {brands.length > 0 && <Button text={'Add brand'} icon={AddCircleOutlineIcon} onClick={() => {}} />}
+                {(brands.length > 0 || props.openedit) && (
+                  <Button
+                    text={props.openedit ? 'Edit Brand' : 'Add Brand'}
+                    icon={AddCircleOutlineIcon}
+                    onClick={() => {}}
+                  />
+                )}
               </div>
               <Divider sx={{ marginTop: '1vw', marginLeft: '0.5vw', width: 640 }} />
             </Stack>

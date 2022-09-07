@@ -14,7 +14,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function Category() {
   const classes = useStyles();
-  const [openShowUpModelDelete, setopenShowUpModelDelete] = useState(false);
+  const [openedit, setopenedit] = useState(false);
+  const [opendelete, setopendelete] = useState(false);
+
   const [openShowUpModelAddEdit, setopenShowUpModelAddEdit] = useState(false);
   const [finalCategoriesArray, setfinalCategoriesArray] = useState([]);
   const [height, setheight] = useState(250);
@@ -37,12 +39,20 @@ export default function Category() {
 
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="center" sx={{ mb: 5 }}>
           <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-            <Table text={'Category Name'} />
+            <Table
+              text={'Category Name'}
+              openedit={openedit}
+              setopenedit={setopenedit}
+              openeditmodel={openShowUpModelAddEdit}
+              setopeneditmodel={setopenShowUpModelAddEdit}
+              opendelete={opendelete}
+              setopendelete={setopendelete}
+            />
           </Stack>
         </Stack>
 
         {/* <Table className={classes.table} /> */}
-        {/* <ShowUpModel open={openShowUpModelDelete} setopen={setopenShowUpModelDelete} /> */}
+        <ShowUpModel open={opendelete} setopen={setopendelete} />
         <ShowUpModelAdd
           open={openShowUpModelAddEdit}
           setopen={setopenShowUpModelAddEdit}
@@ -50,6 +60,8 @@ export default function Category() {
           height={height}
           setheight={setheight}
           setfinalCategoriesArray={setfinalCategoriesArray}
+          openedit={openedit}
+          setopenedit={setopenedit}
         />
       </Container>
     </Page>
