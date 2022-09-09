@@ -85,7 +85,13 @@ const ShowUpModel = (props) => {
             <div className={classes.display}>
               <div>
                 {' '}
-                <Button className={classes.button} variant="outlined">
+                <Button
+                  className={classes.button}
+                  variant="outlined"
+                  onClick={() => {
+                    props.delete(true);
+                  }}
+                >
                   Delete it
                 </Button>
               </div>

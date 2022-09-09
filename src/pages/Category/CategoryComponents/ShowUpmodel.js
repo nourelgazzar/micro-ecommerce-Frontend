@@ -4,6 +4,7 @@ import { FamilyRestroomRounded } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@material-ui/core';
@@ -17,6 +18,7 @@ import { RHFTextField } from '../../../components/hook-form';
 import Button from '../../../components/Button';
 
 import CategoryDiv from './CategoryDiv';
+
 // import Button from '../../../components/Button';
 
 let count = 1;
@@ -62,9 +64,10 @@ const ShowUpModel = (props) => {
   const [category, setcategory] = useState('');
   const [deleteCheck, setdeleteCheck] = useState(false);
   const [deleteID, setdeleteID] = useState(0);
+  const token = localStorage.getItem('token');
 
   const CategorySchema = Yup.object().shape({
-    Category: Yup.string().max(40).required(),
+    name: Yup.string().max(40).required(),
   });
 
   const {
@@ -75,9 +78,35 @@ const ShowUpModel = (props) => {
 
   const addnewCategory = (data) => {
     props.setheight(500);
-    setcategories([...categories, { category: data.Category, id: count }]);
+    setcategories([...categories, { category: data.name, id: count }]);
     setcategory('');
     count += 1;
+  };
+
+  const onSubmit = async (data) => {
+    props.seteditBtn(data);
+    axios
+      .post('http://localhost:8000/api/admin/categories', data, {
+        headers: {
+          Authorization: `Bearer  ${token}`,
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+          accept: 'application/json',
+        },
+      })
+      .then((response) => {
+        console.log('Response : ', response);
+        if (response.status === 201) {
+          response.text('Added Successfully');
+          console.log('Response Text', response.text);
+        }
+      })
+      .catch((error) => {
+        console.log('Error :', error);
+        if (error.status === 401) {
+          console.log(error.message);
+        }
+      });
   };
 
   useEffect(() => {
@@ -149,7 +178,7 @@ const ShowUpModel = (props) => {
               )}
               <div className={classes.textFieldDiv}>
                 <TextField
-                  name="Category"
+                  name="name"
                   label="Category"
                   // value={category}
 
@@ -157,7 +186,7 @@ const ShowUpModel = (props) => {
                     props.setheight(500);
                     setcategory(e.target.value);
                   }}
-                  {...register('Category', { required: true })}
+                  {...register('name', { required: true })}
                 />
 
                 {!props.openedit && (
@@ -176,13 +205,15 @@ const ShowUpModel = (props) => {
                   </IconButton>
                 )}
               </div>
-              {errors.Category?.message}
+              {errors.name?.message}
               <div className={classes.buttonAddCategory}>
                 {(categories.length > 0 || props.openedit) && (
                   <Button
                     text={props.openedit ? 'Edit Category' : 'Add Category'}
                     icon={AddCircleOutlineIcon}
-                    onClick={() => {}}
+                    onClick={(e) => {
+                      handleSubmit(onSubmit)(e);
+                    }}
                   />
                 )}
               </div>

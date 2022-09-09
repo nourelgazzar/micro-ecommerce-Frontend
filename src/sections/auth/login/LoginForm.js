@@ -63,7 +63,7 @@ export default function LoginForm() {
           .then((response) => {
             console.log('Response : ', response);
 
-            if (response.status === 201) {
+            if (response.status === 200) {
               localStorage.setItem('token', response.data.token);
               navigate('/dashboard/app');
               console.log('Response : ', response);

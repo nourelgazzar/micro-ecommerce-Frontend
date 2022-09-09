@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useParams } from 'react-router-dom';
 import { Container, Stack, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import axios from 'axios';
@@ -17,34 +18,95 @@ export default function Category() {
   const classes = useStyles();
   const [openedit, setopenedit] = useState(false);
   const [opendelete, setopendelete] = useState(false);
+  const [deleteBtn, setdeleteBtn] = useState(false);
+  const [editBtn, seteditBtn] = useState(false);
 
   const [openShowUpModelAddEdit, setopenShowUpModelAddEdit] = useState(false);
   const [finalCategoriesArray, setfinalCategoriesArray] = useState([]);
   const [height, setheight] = useState(250);
-  const token = '2|hpJg07BkSJEDixqhaGQlgf1SgJWqHO7leMjhuzvr';
-  // useEffect(() => {
-  //   const getData = () => {
-  //     axios
-  //       .get('http://localhost:8000/api/admin/categories', {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           'Access-Control-Allow-Origin': '*',
-  //           'Content-Type': 'multipart/form-data',
-  //           accept: 'application/json',
-  //         },
-  //       })
-  //       .then((respone) => {
-  //         console.log(respone, 'response');
-  //         const myData = respone.data[0];
-  //         console.log(respone.data[0]);
-  //         // setData(myData);
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       });
-  //   };
-  //   getData();
-  // }, []);
+  const token = localStorage.getItem('token');
+  const [data, setData] = useState([]);
+  const [id, setid] = useState(0);
+  const [name, setname] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:8000/api/admin/categories', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'multipart/form-data',
+          accept: 'application/json',
+        },
+      })
+      .then((respone) => {
+        console.log(respone);
+        const myData = respone.data;
+        // console.log(respone.data);
+        setData(myData);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  console.log('Data : ', data);
+
+  useEffect(() => {
+    console.log('INNN');
+    for (let i = 0; i < data.length; i += 1) {
+      if (data[i].name === name) {
+        setid(data[i].id);
+        console.log(data[i]);
+      }
+    }
+    if (deleteBtn === true) {
+      axios
+        .delete(`http://localhost:8000/api/admin/categories/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'multipart/form-data',
+            accept: 'application/json',
+          },
+        })
+        .then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            const newData = data.filter((temp) => {
+              return temp.id !== id;
+            });
+            setData(newData);
+            setopendelete(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      setdeleteBtn(false);
+    }
+    if (openedit === true) {
+      axios
+        .put(`http://localhost:8000/api/admin/categories/${id}`, {
+          headers: {
+            Authorization: 'Bearer ',
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'multipart/form-data',
+            accept: 'application/json',
+          },
+        })
+        .then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            console.log(response);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      setopenedit(false);
+    }
+  }, [deleteBtn, data, openedit]);
+
   return (
     <Page title="Dashboard: Categories">
       <Container>
@@ -71,12 +133,14 @@ export default function Category() {
               setopeneditmodel={setopenShowUpModelAddEdit}
               opendelete={opendelete}
               setopendelete={setopendelete}
+              data={data}
+              name={setname}
             />
           </Stack>
         </Stack>
 
         {/* <Table className={classes.table} /> */}
-        <ShowUpModel open={opendelete} setopen={setopendelete} />
+        <ShowUpModel open={opendelete} setopen={setopendelete} delete={setdeleteBtn} />
         <ShowUpModelAdd
           open={openShowUpModelAddEdit}
           setopen={setopenShowUpModelAddEdit}
@@ -86,6 +150,8 @@ export default function Category() {
           setfinalCategoriesArray={setfinalCategoriesArray}
           openedit={openedit}
           setopenedit={setopenedit}
+          editBtn={seteditBtn}
+          name={name}
         />
       </Container>
     </Page>

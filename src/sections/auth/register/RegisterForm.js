@@ -55,34 +55,26 @@ export default function RegisterForm() {
   const onSubmit = async (data) => {
     console.log(data);
     axios
-      .get('http://localhost:8000/sanctum/csrf-cookie')
+      .post('http://localhost:8000/api/admin/register', data, {
+        headers: {
+          Authorization: 'Bearer ',
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+          accept: 'application/json',
+        },
+      })
       .then((response) => {
-        axios
-          .post('http://localhost:8000/api/admin/register', data, {
-            headers: {
-              Authorization: 'Bearer ',
-              'Access-Control-Allow-Origin': '*',
-              'Content-Type': 'application/json',
-              accept: 'application/json',
-            },
-          })
-          .then((response) => {
-            console.log('Response : ', response);
+        console.log('Response : ', response);
 
-            if (response.status === 201) {
-              localStorage.setItem('token', response.data.token);
-              navigate('/login');
-              console.log('Response : ', response);
-            }
-          })
-          .catch((error) => {
-            console.log('Error : ', error);
-          });
+        if (response.status === 201) {
+          localStorage.setItem('token', response.data.token);
+          navigate('/login', { replace: true });
+          console.log('Response : ', response);
+        }
       })
       .catch((error) => {
         console.log('Error : ', error);
       });
-    navigate('/login', { replace: true });
   };
 
   return (
