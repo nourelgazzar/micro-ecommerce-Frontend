@@ -1,21 +1,24 @@
 import * as Yup from 'yup';
 import { useState, useEffect } from 'react';
+import { FamilyRestroomRounded, PropaneSharp } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-// form
+import { Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@material-ui/core';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
-import { Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { LoadingButton } from '@mui/lab';
 import { RHFTextField } from '../../../components/hook-form';
+
 import Button from '../../../components/Button';
 
-import BrandDiv from './BrandDiv';
+import CategoryDiv from './BrandDiv';
+
 // import Button from '../../../components/Button';
 
 let count = 1;
@@ -49,49 +52,131 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     flexWrap: 'wrap',
   },
-  branddiv: {
+  categorydiv: {
     marginLeft: 5,
     marginTop: '5%',
   },
-  buttonAddbrand: { marginTop: '2%', textAlign: 'right', marginRight: 30 },
+  buttonAddCategory: { marginTop: '2%', textAlign: 'right', marginRight: 30 },
+  error: {
+    alignItems: 'left',
+    marginLeft: '-50%',
+    marginTop: '1%',
+    color: 'red',
+  },
 }));
 const ShowUpModel = (props) => {
   const classes = useStyles(props);
-  const [brands, setbrands] = useState([]);
-  const [brand, setbrand] = useState('');
+  const [categories, setcategories] = useState([]);
+  const [category, setcategory] = useState('');
   const [deleteCheck, setdeleteCheck] = useState(false);
   const [deleteID, setdeleteID] = useState(0);
+  const [error, seterror] = useState('');
+  const token = localStorage.getItem('token');
 
-  const brandSchema = Yup.object().shape({
-    Brand: Yup.string().max(40).required(),
+  useEffect(() => {
+    if (props.open === true) {
+      console.log(props.openedit, props.open, categories, 'aaaaaaaaaaaaaaa');
+
+      if (props.openedit) {
+        props.setheight(270);
+        console.log(1, '1');
+      } else if (categories.length !== 0) {
+        console.log(categories === [], categories, categories.length);
+        console.log(categories.legnth, 'length');
+        console.log(2);
+
+        props.setheight(500);
+      } else {
+        console.log(3);
+
+        props.setheight(270);
+      }
+    }
+  }, [props.open]);
+
+  const CategorySchema = Yup.object().shape({
+    name: Yup.string().max(40).required(),
   });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(brandSchema) });
+    reset,
+  } = useForm({ resolver: yupResolver(CategorySchema) });
 
-  const addnewbrand = (data) => {
-    props.setheight(500);
-    setbrands([...brands, { brand: data.brand, id: count }]);
-    setbrand('');
-    count += 1;
+  const addnewCategory = (data) => {
+    if (props.openedit === true) {
+      props.editBtn(data.name);
+    } else if (props.finalarray.includes(data.name.toLowerCase())) {
+      seterror('Brand is already included');
+      console.log(error, 'ERRRRRRRRRRRRO');
+    } else {
+      props.setheight(500);
+      seterror(null);
+
+      props.setfinalarray([...props.finalarray, data.name]);
+      setcategories([...categories, { category: data.name, id: count }]);
+      setcategory('');
+      count += 1;
+    }
+  };
+
+  useEffect(() => {}, [props.name]);
+
+  const onSubmit = async (data) => {
+    if (props.openedit === false) {
+      console.log(props.finalarray, 'array addddddddddddddddddd');
+      axios
+        .post(
+          'http://localhost:8000/api/admin/brands',
+          { name: 'dell' },
+          {
+            headers: {
+              Authorization: `Bearer  ${token}`,
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json',
+              accept: 'application/json',
+            },
+          }
+        )
+        .then((response) => {
+          console.log('Response : ', response);
+          if (response.data.status === 201) {
+            props.snackbar(true);
+            props.snackbartext('Brand Added Successfully');
+            console.log('hereeeeee', response.data.category_ids);
+            props.setnewcategoriesids(response.data.category_ids);
+            setcategories([]);
+          }
+        })
+        .catch((error) => {
+          console.log('Error :', error);
+          if (error.status === 401) {
+            console.log(error.message);
+          }
+        });
+    } else {
+      console.log(data, 'DATTTTTTTTTTTTTTTTTTTTTTTTTTTTT');
+      props.editBtn(data.name);
+    }
+
+    props.setopen(false);
   };
 
   useEffect(() => {
     if (deleteCheck === true) {
-      const newar = brands.filter((item) => !(item.id === deleteID));
+      const newar = categories.filter((item) => !(item.id === deleteID));
       for (let i = 0; i < newar.length; i += 1) {
         newar[i].id = i;
       }
-      setbrands(newar);
+      setcategories(newar);
     }
-    if (brands.length === 0) props.setheight(250);
+    if (categories.length === 0) props.setheight(270);
     setdeleteCheck(false);
-  }, [deleteCheck, brands]);
+  }, [deleteCheck, categories]);
 
-  console.log({ brands });
+  console.log({ categories });
   return (
     <Modal
       disablePortal
@@ -122,7 +207,7 @@ const ShowUpModel = (props) => {
               }}
               onClick={() => {
                 props.setopen(false);
-                props.setopenedit(false);
+                props.setopeneditmodel(false);
               }}
             >
               <CloseIcon
@@ -138,7 +223,7 @@ const ShowUpModel = (props) => {
               {props.openedit ? (
                 <Typography sx={{ marginLeft: '-56%' }} variant="h4">
                   {' '}
-                  Edit Brand
+                  Edit Category
                 </Typography>
               ) : (
                 <Typography sx={{ marginLeft: '-56%' }} variant="h4">
@@ -148,40 +233,43 @@ const ShowUpModel = (props) => {
               )}
               <div className={classes.textFieldDiv}>
                 <TextField
-                  name="Brand"
+                  name="name"
                   label="Brand"
-                  // value={brand}
-
+                  defaultValue={props.openedit ? props.name : ''}
+                  error={(categories.length === 0 && errors.name) || error}
                   onChange={(e) => {
                     props.setheight(500);
-                    setbrand(e.target.value);
+                    setcategory(e.target.value);
                   }}
-                  {...register('brand', { required: true })}
+                  {...register('name', { required: true })}
                 />
 
                 {!props.openedit && (
                   <IconButton
                     type="submit"
                     onClick={(e) => {
-                      handleSubmit(addnewbrand)(e);
+                      handleSubmit(addnewCategory)(e);
                     }}
                   >
                     <AddCircleOutlineIcon
                       sx={{
                         width: 30,
                         height: 30,
+                        color: '#2065D1',
                       }}
                     />
                   </IconButton>
                 )}
               </div>
-              {errors.brand?.message}
-              <div className={classes.buttonAddbrand}>
-                {(brands.length > 0 || props.openedit) && (
+              <div className={classes.error}> {(categories.length === 0 && errors.name?.message) || error}</div>
+              <div className={classes.buttonAddCategory}>
+                {(categories.length > 0 || props.openedit) && (
                   <Button
                     text={props.openedit ? 'Edit Brand' : 'Add Brand'}
                     icon={AddCircleOutlineIcon}
-                    onClick={() => {}}
+                    onClick={(e) => {
+                      handleSubmit(onSubmit)(e);
+                    }}
                   />
                 )}
               </div>
@@ -189,24 +277,30 @@ const ShowUpModel = (props) => {
             </Stack>
 
             <div className={classes.newCat}>
-              {brands.map((item) => (
-                <div className={classes.branddiv}>
-                  <brandDiv
-                    text={item.brand}
-                    id={item.id}
-                    setdeleteID={setdeleteID}
-                    setdeleteCheck={setdeleteCheck}
-                    deleteItem={() => {
-                      const newbrands = brands.filter((temp) => {
-                        return temp.id !== item.id;
-                      });
-                      setbrands(newbrands);
-                    }}
-                  />
-                </div>
-              ))}
+              {!props.openedit &&
+                categories.map((item) => (
+                  <div className={classes.categorydiv}>
+                    <CategoryDiv
+                      text={item.category}
+                      id={item.id}
+                      setdeleteID={setdeleteID}
+                      setdeleteCheck={setdeleteCheck}
+                      deleteItem={() => {
+                        const newarray = props.finalarray.filter((temp) => {
+                          return temp !== item.category;
+                        });
+                        console.log(newarray, 'newwwwwwwwwwwwww');
+                        props.setfinalarray(newarray);
+                        const newCategories = categories.filter((temp) => {
+                          return temp.id !== item.id;
+                        });
+                        setcategories(newCategories);
+                      }}
+                    />
+                  </div>
+                ))}
             </div>
-            <div>{/* <Button text={'Add brand'} /> */}</div>
+            <div>{/* <Button text={'Add Category'} /> */}</div>
           </div>
         </div>
       </div>

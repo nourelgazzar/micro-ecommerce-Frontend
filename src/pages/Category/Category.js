@@ -93,11 +93,7 @@ export default function Category() {
         .catch((error) => {});
     }
     if (openedit === true) {
-      console.log(editBtn, prevname, 'efditttttttttttttttt');
-      console.log(editBtn, 'edittttttttttttttttttttt');
       if (editBtn !== '') {
-        setopenedit(false);
-
         if (editBtn !== prevname) {
           axios
             .put(
@@ -115,11 +111,21 @@ export default function Category() {
               }
             )
             .then((response) => {
-              if (response.data.status === 200) {
-                console.log(response, 'RESPONSE');
-                console.log('Category Name : ', response.data.category.name);
+              setopenedit(false);
+              seteditBtn('');
+              if (response.status === 200) {
+                const newcategory = response.data.category;
+                const newCategories = data.filter((temp) => {
+                  console.log(temp, 'temp');
+                  if (temp.id === newcategory.id) {
+                    temp.name = newcategory.name;
+                    console.log(temp, newcategory, 'checkkkkkkk');
+                  }
+                  return temp;
+                });
+                console.log(newCategories, 'newwwwwwwwwwwwwwwww');
+                setData(newCategories);
                 setnewcategoriesids([]);
-                setfinalarray([]);
                 setopenSnackBar(true);
                 setsnackBarText('Category Updated successfully ');
               }
@@ -169,6 +175,7 @@ export default function Category() {
               setopendelete={setopendelete}
               data={data}
               name={setname}
+              height={setheight}
             />
           </Stack>
         </Stack>

@@ -80,7 +80,7 @@ const ShowUpModel = (props) => {
       if (props.openedit) {
         props.setheight(270);
         console.log(1, '1');
-      } else if (categories !== [] || categories.legnth !== 0) {
+      } else if (categories.length !== 0) {
         console.log(categories === [], categories, categories.length);
         console.log(categories.legnth, 'length');
         console.log(2);
@@ -130,6 +130,7 @@ const ShowUpModel = (props) => {
 
   const onSubmit = async (data) => {
     if (props.openedit === false) {
+      console.log(props.finalarray, 'array addddddddddddddddddd');
       axios
         .post(
           'http://localhost:8000/api/admin/categories',
@@ -150,7 +151,7 @@ const ShowUpModel = (props) => {
             props.snackbartext('Category Added Successfully');
             console.log('hereeeeee', response.data.category_ids);
             props.setnewcategoriesids(response.data.category_ids);
-            reset();
+            setcategories([]);
           }
         })
         .catch((error) => {
@@ -210,7 +211,7 @@ const ShowUpModel = (props) => {
               }}
               onClick={() => {
                 props.setopen(false);
-                props.setopenedit(false);
+                props.setopeneditmodel(false);
               }}
             >
               <CloseIcon
