@@ -72,6 +72,7 @@ export default function CustomizedTables(props) {
                 <IconButton
                   onClick={() => {
                     props.name(item.name);
+                    
                     props.setopendelete(true);
                   }}
                 >

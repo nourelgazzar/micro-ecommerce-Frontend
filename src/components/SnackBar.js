@@ -37,7 +37,7 @@ export default function SimpleSnackbar(props) {
         onClose={handleClose}
         open={props.open}
       >
-        <Alert severity="success" open={opensnackbar} onClose={handleClose}>
+        <Alert severity="info" open={opensnackbar} onClose={handleClose}>
           {props.message}
         </Alert>
       </Snackbar>
