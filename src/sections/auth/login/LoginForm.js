@@ -7,16 +7,25 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Link, Stack, IconButton, InputAdornment, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 // components
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
 
 // ----------------------------------------------------------------------
+const useStyles = makeStyles((theme) => ({
+  error: {
+    alignItems: 'left',
+    marginLeft: '-50%',
+    marginTop: '1%',
+    color: 'red',
+  },
+}));
 
 export default function LoginForm() {
   const navigate = useNavigate();
-
+  const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
@@ -92,9 +101,11 @@ export default function LoginForm() {
           onChange={(e) => {
             setEmail(e.target.value);
           }}
+          error={errors.email}
           {...register('email', { required: true })}
         />
-        {errors.email?.message}
+        <div className={classes.error}>{errors.email?.message}</div>
+
         <TextField
           name="password"
           label="Password"
@@ -102,6 +113,7 @@ export default function LoginForm() {
           onChange={(e) => {
             setPassword(e.target.value);
           }}
+          error={errors.password}
           {...register('password', { required: true })}
           InputProps={{
             endAdornment: (
@@ -113,7 +125,7 @@ export default function LoginForm() {
             ),
           }}
         />
-        {errors.password?.message}
+        <div className={classes.error}>{errors.password?.message}</div>
       </Stack>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>

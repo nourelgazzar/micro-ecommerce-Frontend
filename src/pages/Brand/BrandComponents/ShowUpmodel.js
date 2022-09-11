@@ -95,7 +95,10 @@ const ShowUpModel = (props) => {
   }, [props.open]);
 
   const CategorySchema = Yup.object().shape({
-    name: Yup.string().max(40).required(),
+    name: Yup.string()
+      .max(40)
+      .required()
+      .matches(/(^([a-zA-Z]+)(\d+)?$)/u, ' Brand has to start with a letter'),
   });
 
   const {
