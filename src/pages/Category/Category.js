@@ -110,7 +110,7 @@ export default function Category() {
                 headers: {
                   Authorization: `Bearer  ${token}`,
                   'Access-Control-Allow-Origin': '*',
-                  'Content-Type': 'multipart/form-data',
+                  'Content-Type': 'application/json',
                   accept: 'application/json',
                 },
               }
