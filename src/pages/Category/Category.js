@@ -99,7 +99,6 @@ export default function Category() {
         setopenedit(false);
 
         if (editBtn !== prevname) {
-          console.log(editBtn, prevname, 'innnnnnnnnnnnnnnnnnnn ');
           axios
             .put(
               `http://localhost:8000/api/admin/categories/${id}`,
@@ -117,14 +116,17 @@ export default function Category() {
             )
             .then((response) => {
               if (response.data.status === 200) {
-                console.log(response, 'RESPONSEEEEEEEEEEEEEEE');
+                console.log(response, 'RESPONSE');
+                console.log('Category Name : ', response.data.category.name);
                 setnewcategoriesids([]);
                 setfinalarray([]);
                 setopenSnackBar(true);
                 setsnackBarText('Category Updated successfully ');
               }
             })
-            .catch((error) => {});
+            .catch((error) => {
+              console.log('Error : ', error);
+            });
         }
       }
     }

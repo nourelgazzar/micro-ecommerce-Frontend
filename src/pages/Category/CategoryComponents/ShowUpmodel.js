@@ -95,7 +95,10 @@ const ShowUpModel = (props) => {
   }, [props.open]);
 
   const CategorySchema = Yup.object().shape({
-    name: Yup.string().max(40).required(),
+    name: Yup.string()
+      .max(40)
+      .required()
+      .matches(/(^([a-zA-Z]+)(\d+)?$)/u, ' Category has to start with a letter'),
   });
 
   const {
@@ -110,7 +113,7 @@ const ShowUpModel = (props) => {
       props.editBtn(data.name);
     } else if (props.finalarray.includes(data.name.toLowerCase())) {
       seterror('Category is already included');
-      console.log(error, 'ERRRRRRRRRRRRO');
+      console.log(error, 'Error');
     } else {
       props.setheight(500);
       seterror(null);
@@ -118,6 +121,7 @@ const ShowUpModel = (props) => {
       props.setfinalarray([...props.finalarray, data.name]);
       setcategories([...categories, { category: data.name, id: count }]);
       setcategory('');
+
       count += 1;
     }
   };
@@ -146,6 +150,7 @@ const ShowUpModel = (props) => {
             props.snackbartext('Category Added Successfully');
             console.log('hereeeeee', response.data.category_ids);
             props.setnewcategoriesids(response.data.category_ids);
+            reset();
           }
         })
         .catch((error) => {
