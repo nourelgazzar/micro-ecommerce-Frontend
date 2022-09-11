@@ -57,6 +57,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '5%',
   },
   buttonAddCategory: { marginTop: '2%', textAlign: 'right', marginRight: 30 },
+  error: {
+    alignItems: 'left',
+    marginLeft: '-50%',
+    marginTop: '1%',
+    color: 'red',
+  },
 }));
 const ShowUpModel = (props) => {
   const classes = useStyles(props);
@@ -97,8 +103,8 @@ const ShowUpModel = (props) => {
       .then((response) => {
         console.log('Response : ', response);
         if (response.status === 201) {
-          response.text('Added Successfully');
-          console.log('Response Text', response.text);
+          props.snackbar(true);
+          props.snackbartext('Category Added Successfully');
         }
       })
       .catch((error) => {
@@ -180,8 +186,7 @@ const ShowUpModel = (props) => {
                 <TextField
                   name="name"
                   label="Category"
-                  // value={category}
-
+                  error={categories.length === 0 && errors.name}
                   onChange={(e) => {
                     props.setheight(500);
                     setcategory(e.target.value);
@@ -200,12 +205,13 @@ const ShowUpModel = (props) => {
                       sx={{
                         width: 30,
                         height: 30,
+                        color: '#2065D1',
                       }}
                     />
                   </IconButton>
                 )}
               </div>
-              {errors.name?.message}
+              <div className={classes.error}> {categories.length === 0 && errors.name?.message}</div>
               <div className={classes.buttonAddCategory}>
                 {(categories.length > 0 || props.openedit) && (
                   <Button

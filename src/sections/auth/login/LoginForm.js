@@ -39,11 +39,10 @@ export default function LoginForm() {
   } = methods;
 
   const onSubmit = async (data) => {
-    // navigate('/dashboard', { replace: true });
+    console.log(data.email, data.password);
     axios
       .get('http://localhost:8000/sanctum/csrf-cookie')
       .then((response) => {
-        console.log(data.email, data.password);
         axios
           .post(
             'http://localhost:8000/api/admin/login',

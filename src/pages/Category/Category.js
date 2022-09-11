@@ -9,6 +9,7 @@ import Page from '../../components/Page';
 import Table from '../../components/Table';
 import ShowUpModel from '../../components/ShowModelPopUp';
 import Button from '../../components/Button';
+import SnackBar from '../../components/SnackBar';
 import ShowUpModelAdd from './CategoryComponents/ShowUpmodel';
 
 const useStyles = makeStyles((theme) => ({
@@ -29,6 +30,8 @@ export default function Category() {
   const [id, setid] = useState(0);
   const [name, setname] = useState('');
 
+  const [openSnackBar, setopenSnackBar] = useState(false);
+  const [snackBarText, setsnackBarText] = useState('');
   useEffect(() => {
     axios
       .get('http://localhost:8000/api/admin/categories', {
@@ -77,6 +80,8 @@ export default function Category() {
             });
             setData(newData);
             setopendelete(false);
+            setopenSnackBar(true);
+            setsnackBarText('Category deleted successfully ');
           }
         })
         .catch((error) => {
@@ -97,7 +102,8 @@ export default function Category() {
         .then((response) => {
           console.log(response);
           if (response.status === 200) {
-            console.log(response);
+            setopenSnackBar(true);
+            setsnackBarText('Category Updated successfully ');
           }
         })
         .catch((error) => {
@@ -152,8 +158,11 @@ export default function Category() {
           setopenedit={setopenedit}
           editBtn={seteditBtn}
           name={name}
+          snackbar={setopenSnackBar}
+          snackbartext={setsnackBarText}
         />
       </Container>
+      <SnackBar open={openSnackBar} setopen={setopenSnackBar} />
     </Page>
   );
 }

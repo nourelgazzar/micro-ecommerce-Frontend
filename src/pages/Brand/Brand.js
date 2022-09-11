@@ -19,6 +19,7 @@ export default function Brand() {
   const [openShowUpModelAddEdit, setopenShowUpModelAddEdit] = useState(false);
   const [finalBrandsArray, setfinalBrandsArray] = useState([]);
   const [height, setheight] = useState(250);
+  const [data, setdata] = useState([]);
 
   return (
     <Page title="Dashboard: Brands">
@@ -43,6 +44,7 @@ export default function Brand() {
               setopendelete={setopenShowUpModelDelete}
               setopenedit={setopenedit}
               setopeneditmodel={setopenShowUpModelAddEdit}
+              data={data}
             />
           </Stack>
         </Stack>
