@@ -10,21 +10,21 @@ import Table from '../../components/Table';
 import ShowUpModel from '../../components/ShowModelPopUp';
 import Button from '../../components/Button';
 import SnackBar from '../../components/SnackBar';
-import ShowUpModelAdd from './BrandComponents/ShowUpmodel';
+import ShowUpModelAdd from './ProductComponents/ShowUpModel';
 
 const useStyles = makeStyles((theme) => ({
   table: {},
 }));
-export default function Category() {
+export default function Product() {
   const classes = useStyles();
   const [openedit, setopenedit] = useState(false);
   const [opendelete, setopendelete] = useState(false);
   const [deleteBtn, setdeleteBtn] = useState(false);
   const [editBtn, seteditBtn] = useState('');
   const [finalarray, setfinalarray] = useState([]);
-  const [newcategoriesids, setnewcategoriesids] = useState([]);
+  const [newproductsids, setnewproductsids] = useState([]);
   const [openShowUpModelAddEdit, setopenShowUpModelAddEdit] = useState(false);
-  const [finalCategoriesArray, setfinalCategoriesArray] = useState([]);
+  const [finalProductsArray, setfinalProductsArray] = useState([]);
   const [height, setheight] = useState(270);
   const token = localStorage.getItem('token');
   const [data, setData] = useState([]);
@@ -34,10 +34,9 @@ export default function Category() {
   const [openSnackBar, setopenSnackBar] = useState(false);
   const [snackBarText, setsnackBarText] = useState('');
 
-  console.log(openedit, 'open edit bool ');
   useEffect(() => {
     axios
-      .get('http://localhost:8000/api/admin/brands', {
+      .get('http://localhost:8000/api/admin/products', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Access-Control-Allow-Origin': '*',
@@ -46,7 +45,6 @@ export default function Category() {
         },
       })
       .then((respone) => {
-        console.log('Response : ', respone);
         const myData = respone.data;
         setData(myData);
       })
@@ -55,19 +53,14 @@ export default function Category() {
 
   useEffect(() => {
     for (let i = 0; i < data.length; i += 1) {
-      console.log(data, data[i].name, prevname, 'alllllllllllllll');
       if (data[i].name === prevname) {
         setid(data[i].id);
         break;
       }
-      console.log(id, 'IDDDDDDDDDDDDDD');
     }
     if (deleteBtn === true && id !== null) {
-      console.log(deleteBtn, id, prevname, 'alllllllllllllllllll');
-      console.log('in deleteeeeeeeee');
-      console.log(id, 'test');
       axios
-        .delete(`http://localhost:8000/api/admin/brands/${id}`, {
+        .delete(`http://localhost:8000/api/admin/products/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*',
@@ -76,18 +69,16 @@ export default function Category() {
           },
         })
         .then((response) => {
-          console.log(response, 'response');
           if (response.data.status === 200) {
             const newData = data.filter((temp) => {
               return temp.id !== id;
             });
-            console.log(newData, 'newwwwwwwwwwww');
 
             setData(newData);
             setopendelete(false);
             setopenSnackBar(true);
 
-            setsnackBarText('Brand deleted successfully ');
+            setsnackBarText('Product deleted successfully ');
             setdeleteBtn(false);
           }
         })
@@ -98,7 +89,7 @@ export default function Category() {
         if (editBtn !== prevname) {
           axios
             .put(
-              `http://localhost:8000/api/admin/brands/${id}`,
+              `http://localhost:8000/api/admin/products/${id}`,
               {
                 name: editBtn,
               },
@@ -115,46 +106,44 @@ export default function Category() {
               setopenedit(false);
               seteditBtn('');
               if (response.status === 200) {
-                const newcategory = response.data.category;
-                const newCategories = data.filter((temp) => {
-                  console.log(temp, 'temp');
-                  if (temp.id === newcategory.id) {
-                    temp.name = newcategory.name;
-                    console.log(temp, newcategory, 'checkkkkkkk');
+                const newproduct = response.data.product;
+                const newProducts = data.filter((temp) => {
+                  if (temp.id === newproduct.id) {
+                    temp.name = newproduct.name;
                   }
                   return temp;
                 });
-                console.log(newCategories, 'newwwwwwwwwwwwwwwww');
-                setData(newCategories);
-                setnewcategoriesids([]);
+
+                setData(newProducts);
+                setnewproductsids([]);
                 setopenSnackBar(true);
-                setsnackBarText('Brand Updated successfully ');
+                setsnackBarText('Product Updated successfully ');
               }
             })
             .catch((error) => {});
         }
       }
     }
-    if (newcategoriesids.length !== 0) {
+    if (newproductsids.length !== 0) {
       let array = data;
-      for (let i = 0; i < newcategoriesids.length; i += 1) {
-        array = [...array, { name: finalarray[i], id: newcategoriesids[i] }];
+      for (let i = 0; i < newproductsids.length; i += 1) {
+        array = [...array, { name: finalarray[i], id: newproductsids[i] }];
       }
       setData(array);
-      setnewcategoriesids([]);
+      setnewproductsids([]);
       setfinalarray([]);
     }
-  }, [deleteBtn, data, openedit, newcategoriesids, id, prevname, editBtn]);
+  }, [deleteBtn, data, openedit, newproductsids, id, prevname, editBtn]);
 
   return (
-    <Page title="Dashboard: Categories">
+    <Page title="Dashboard: Products">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap-reverse" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Brands
+            Products
           </Typography>
           <Button
-            text={'Add Brand'}
+            text={'Add Product'}
             icon={AddCircleOutlineIcon}
             onClick={() => {
               setopenShowUpModelAddEdit(true);
@@ -165,7 +154,7 @@ export default function Category() {
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="center" sx={{ mb: 5 }}>
           <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
             <Table
-              text={'Brand Name'}
+              text={'Product Name'}
               openedit={openedit}
               setopenedit={setopenedit}
               openeditmodel={openShowUpModelAddEdit}
@@ -184,17 +173,17 @@ export default function Category() {
         <ShowUpModelAdd
           open={openShowUpModelAddEdit}
           setopen={setopenShowUpModelAddEdit}
-          finalCategoriesArray={finalCategoriesArray}
+          finalProductsArray={finalProductsArray}
           height={height}
           setheight={setheight}
-          setfinalCategoriesArray={setfinalCategoriesArray}
+          setfinalProductsArray={setfinalProductsArray}
           openedit={openedit}
           setopenedit={setopenedit}
           editBtn={seteditBtn}
           name={prevname}
           snackbar={setopenSnackBar}
           snackbartext={setsnackBarText}
-          setnewcategoriesids={setnewcategoriesids}
+          setnewproductsids={setnewproductsids}
           finalarray={finalarray}
           setfinalarray={setfinalarray}
         />

@@ -133,7 +133,7 @@ const ShowUpModel = (props) => {
       axios
         .post(
           'http://localhost:8000/api/admin/brands',
-          { name: 'dell' },
+          { names: props.finalarray },
           {
             headers: {
               Authorization: `Bearer  ${token}`,
