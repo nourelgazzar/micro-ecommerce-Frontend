@@ -209,7 +209,6 @@ const ShowUpModel = (props) => {
                 height: 30,
               }}
               onClick={() => {
-              
                 props.setopenedit(false);
                 props.setopen(false);
               }}
@@ -239,7 +238,6 @@ const ShowUpModel = (props) => {
                 <TextField
                   name="name"
                   label="Brand"
-                  defaultValue={props.openedit ? props.name : ''}
                   error={(categories.length === 0 && errors.name) || error}
                   onChange={(e) => {
                     props.setheight(500);
