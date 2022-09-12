@@ -61,6 +61,7 @@ export default function Category() {
       }
       console.log(id, 'IDDDDDDDDDDDDDD');
     }
+
     if (deleteBtn === true && id !== null) {
       console.log(deleteBtn, id, prevname, 'alllllllllllllllllll');
       console.log('in deleteeeeeeeee');
@@ -113,8 +114,9 @@ export default function Category() {
             .then((response) => {
               setopenedit(false);
               seteditBtn('');
-              if (response.status === 200) {
-                const newcategory = response.data.category;
+              if (response.data.status === 200) {
+                console.log(response.data, response, 'EDITTTTTTTTTT');
+                const newcategory = response.data.data;
                 const newCategories = data.filter((temp) => {
                   console.log(temp, 'temp');
                   if (temp.id === newcategory.id) {
@@ -134,6 +136,7 @@ export default function Category() {
         }
       }
     }
+    console.log(newcategoriesids, 'newwwwwwwwwwwwww cat ');
     if (newcategoriesids.length !== 0) {
       let array = data;
       for (let i = 0; i < newcategoriesids.length; i += 1) {

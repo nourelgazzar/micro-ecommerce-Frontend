@@ -133,7 +133,7 @@ const ShowUpModel = (props) => {
       axios
         .post(
           'http://localhost:8000/api/admin/brands',
-          { name: 'dell' },
+          { names: props.finalarray },
           {
             headers: {
               Authorization: `Bearer  ${token}`,
@@ -148,8 +148,8 @@ const ShowUpModel = (props) => {
           if (response.data.status === 201) {
             props.snackbar(true);
             props.snackbartext('Brand Added Successfully');
-            console.log('hereeeeee', response.data.category_ids);
-            props.setnewcategoriesids(response.data.category_ids);
+            console.log('hereeeeee', response.data.brand_ids);
+            props.setnewcategoriesids(response.data.brand_ids);
             setcategories([]);
           }
         })
@@ -209,8 +209,9 @@ const ShowUpModel = (props) => {
                 height: 30,
               }}
               onClick={() => {
+              
+                props.setopenedit(false);
                 props.setopen(false);
-                props.setopeneditmodel(false);
               }}
             >
               <CloseIcon

@@ -210,8 +210,9 @@ const ShowUpModel = (props) => {
                 height: 30,
               }}
               onClick={() => {
+                props.setopenedit(false);
+
                 props.setopen(false);
-                props.setopeneditmodel(false);
               }}
             >
               <CloseIcon
