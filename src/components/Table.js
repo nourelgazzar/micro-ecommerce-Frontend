@@ -36,7 +36,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 //   return { name, calories, fat, carbs, protein };
 // }
 
-const rows = ['Frozen yoghurt', 'Ice cream sandwich', 'Eclair', 'Cupcake', 'Gingerbread'];
+// const rows = ['Frozen yoghurt', 'Ice cream sandwich', 'Eclair', 'Cupcake', 'Gingerbread'];
 
 export default function CustomizedTables(props) {
   return (
@@ -52,17 +52,19 @@ export default function CustomizedTables(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <StyledTableRow key={row.name}>
+          {props.data.map((item) => (
+            <StyledTableRow key={item.name}>
               <StyledTableCell component="th" scope="row">
-                {row.name}
+                {item.name}
               </StyledTableCell>
               <StyledTableCell align="right">
                 {' '}
                 <IconButton
                   onClick={() => {
+                    props.name(item.name);
                     props.setopenedit(true);
                     props.setopeneditmodel(true);
+                    props.height(270);
                   }}
                 >
                   {' '}
@@ -70,6 +72,8 @@ export default function CustomizedTables(props) {
                 </IconButton>
                 <IconButton
                   onClick={() => {
+                    props.name(item.name);
+
                     props.setopendelete(true);
                   }}
                 >

@@ -1,9 +1,10 @@
 import * as Yup from 'yup';
 import { useState, useEffect } from 'react';
-import { FamilyRestroomRounded } from '@mui/icons-material';
+import { FamilyRestroomRounded, PropaneSharp } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@material-ui/core';
@@ -17,6 +18,7 @@ import { RHFTextField } from '../../../components/hook-form';
 import Button from '../../../components/Button';
 
 import CategoryDiv from './CategoryDiv';
+
 // import Button from '../../../components/Button';
 
 let count = 1;
@@ -55,6 +57,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '5%',
   },
   buttonAddCategory: { marginTop: '2%', textAlign: 'right', marginRight: 30 },
+  error: {
+    alignItems: 'left',
+    marginLeft: '-50%',
+    marginTop: '1%',
+    color: 'red',
+  },
 }));
 const ShowUpModel = (props) => {
   const classes = useStyles(props);
@@ -62,22 +70,102 @@ const ShowUpModel = (props) => {
   const [category, setcategory] = useState('');
   const [deleteCheck, setdeleteCheck] = useState(false);
   const [deleteID, setdeleteID] = useState(0);
+  const [error, seterror] = useState('');
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    if (props.open === true) {
+      console.log(props.openedit, props.open, categories, 'aaaaaaaaaaaaaaa');
+
+      if (props.openedit) {
+        props.setheight(270);
+        console.log(1, '1');
+      } else if (categories.length !== 0) {
+        console.log(categories === [], categories, categories.length);
+        console.log(categories.legnth, 'length');
+        console.log(2);
+
+        props.setheight(500);
+      } else {
+        console.log(3);
+
+        props.setheight(270);
+      }
+    }
+  }, [props.open]);
 
   const CategorySchema = Yup.object().shape({
-    Category: Yup.string().max(40).required(),
+    name: Yup.string()
+      .max(40)
+      .required()
+      .matches(/(^([a-zA-Z]+)(\d+)?$)/u, ' Category has to start with a letter'),
   });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({ resolver: yupResolver(CategorySchema) });
 
   const addnewCategory = (data) => {
-    props.setheight(500);
-    setcategories([...categories, { category: data.Category, id: count }]);
-    setcategory('');
-    count += 1;
+    if (props.openedit === true) {
+      props.editBtn(data.name);
+    } else if (props.finalarray.includes(data.name.toLowerCase())) {
+      seterror('Category is already included');
+      console.log(error, 'Error');
+    } else {
+      props.setheight(500);
+      seterror(null);
+
+      props.setfinalarray([...props.finalarray, data.name]);
+      setcategories([...categories, { category: data.name, id: count }]);
+      setcategory('');
+
+      count += 1;
+    }
+  };
+
+  useEffect(() => {}, [props.name]);
+
+  const onSubmit = async (data) => {
+    if (props.openedit === false) {
+      console.log(props.finalarray, 'array addddddddddddddddddd');
+      axios
+        .post(
+          'http://localhost:8000/api/admin/categories',
+          { names: props.finalarray },
+          {
+            headers: {
+              Authorization: `Bearer  ${token}`,
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json',
+              accept: 'application/json',
+            },
+          }
+        )
+        .then((response) => {
+          console.log('Response : ', response);
+          if (response.data.status === 201) {
+            props.snackbar(true);
+            props.snackbartext('Category Added Successfully');
+            console.log('hereeeeee', response.data.category_ids);
+            props.setnewcategoriesids(response.data.category_ids);
+            setcategories([]);
+          }
+        })
+        .catch((error) => {
+          console.log('Error :', error);
+          if (error.status === 401) {
+            console.log(error.message);
+          }
+        });
+    } else {
+      console.log(data, 'DATTTTTTTTTTTTTTTTTTTTTTTTTTTTT');
+      props.editBtn(data.name);
+    }
+
+    props.setopen(false);
   };
 
   useEffect(() => {
@@ -88,7 +176,7 @@ const ShowUpModel = (props) => {
       }
       setcategories(newar);
     }
-    if (categories.length === 0) props.setheight(250);
+    if (categories.length === 0) props.setheight(270);
     setdeleteCheck(false);
   }, [deleteCheck, categories]);
 
@@ -122,8 +210,9 @@ const ShowUpModel = (props) => {
                 height: 30,
               }}
               onClick={() => {
-                props.setopen(false);
                 props.setopenedit(false);
+
+                props.setopen(false);
               }}
             >
               <CloseIcon
@@ -149,15 +238,14 @@ const ShowUpModel = (props) => {
               )}
               <div className={classes.textFieldDiv}>
                 <TextField
-                  name="Category"
+                  name="name"
                   label="Category"
-                  // value={category}
-
+                  error={(categories.length === 0 && errors.name) || error}
                   onChange={(e) => {
                     props.setheight(500);
                     setcategory(e.target.value);
                   }}
-                  {...register('Category', { required: true })}
+                  {...register('name', { required: true })}
                 />
 
                 {!props.openedit && (
@@ -171,18 +259,21 @@ const ShowUpModel = (props) => {
                       sx={{
                         width: 30,
                         height: 30,
+                        color: '#2065D1',
                       }}
                     />
                   </IconButton>
                 )}
               </div>
-              {errors.Category?.message}
+              <div className={classes.error}> {(categories.length === 0 && errors.name?.message) || error}</div>
               <div className={classes.buttonAddCategory}>
                 {(categories.length > 0 || props.openedit) && (
                   <Button
                     text={props.openedit ? 'Edit Category' : 'Add Category'}
                     icon={AddCircleOutlineIcon}
-                    onClick={() => {}}
+                    onClick={(e) => {
+                      handleSubmit(onSubmit)(e);
+                    }}
                   />
                 )}
               </div>
@@ -190,22 +281,28 @@ const ShowUpModel = (props) => {
             </Stack>
 
             <div className={classes.newCat}>
-              {categories.map((item) => (
-                <div className={classes.categorydiv}>
-                  <CategoryDiv
-                    text={item.category}
-                    id={item.id}
-                    setdeleteID={setdeleteID}
-                    setdeleteCheck={setdeleteCheck}
-                    deleteItem={() => {
-                      const newCategories = categories.filter((temp) => {
-                        return temp.id !== item.id;
-                      });
-                      setcategories(newCategories);
-                    }}
-                  />
-                </div>
-              ))}
+              {!props.openedit &&
+                categories.map((item) => (
+                  <div className={classes.categorydiv}>
+                    <CategoryDiv
+                      text={item.category}
+                      id={item.id}
+                      setdeleteID={setdeleteID}
+                      setdeleteCheck={setdeleteCheck}
+                      deleteItem={() => {
+                        const newarray = props.finalarray.filter((temp) => {
+                          return temp !== item.category;
+                        });
+                        console.log(newarray, 'newwwwwwwwwwwwww');
+                        props.setfinalarray(newarray);
+                        const newCategories = categories.filter((temp) => {
+                          return temp.id !== item.id;
+                        });
+                        setcategories(newCategories);
+                      }}
+                    />
+                  </div>
+                ))}
             </div>
             <div>{/* <Button text={'Add Category'} /> */}</div>
           </div>

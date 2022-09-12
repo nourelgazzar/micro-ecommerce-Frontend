@@ -85,7 +85,14 @@ const ShowUpModel = (props) => {
             <div className={classes.display}>
               <div>
                 {' '}
-                <Button className={classes.button} variant="outlined">
+                <Button
+                  className={classes.button}
+                  variant="outlined"
+                  color="error"
+                  onClick={() => {
+                    props.delete(true);
+                  }}
+                >
                   Delete it
                 </Button>
               </div>
@@ -94,7 +101,6 @@ const ShowUpModel = (props) => {
                 <Button
                   className={classes.button}
                   variant="outlined"
-                  color="error"
                   onClick={() => {
                     props.setopen(false);
                   }}
