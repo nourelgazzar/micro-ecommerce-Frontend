@@ -240,7 +240,6 @@ const ShowUpModel = (props) => {
                 <TextField
                   name="name"
                   label="Category"
-                  defaultValue={props.openedit ? props.name : ''}
                   error={(categories.length === 0 && errors.name) || error}
                   onChange={(e) => {
                     props.setheight(500);
