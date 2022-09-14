@@ -14,7 +14,8 @@ import DashboardApp from './pages/DashboardApp';
 import Category from './pages/Category/Category';
 import Brand from './pages/Brand/Brand';
 import OderDetails from './pages/OrderDetails';
-
+import LoginUser from "./pages/LoginUser"
+import RegisterUser from "./pages/RegisterUser"
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -57,6 +58,18 @@ export default function Router() {
     {
       path: 'login',
       element: <Login />,
+    },
+    {
+      path: 'products',
+      element: <Products />,
+    },
+    {
+      path: 'loginuser',
+      element: <LoginUser />,
+    },
+    {
+      path: 'registeruser',
+      element: <RegisterUser />,
     },
     {
       path: 'oder',
