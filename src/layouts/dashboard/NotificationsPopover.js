@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { set, sub } from 'date-fns';
 import { noCase } from 'change-case';
 import { faker } from '@faker-js/faker';
@@ -79,8 +80,9 @@ const NOTIFICATIONS = [
   },
 ];
 
-export default function NotificationsPopover() {
+export default function NotificationsPopover(props) {
   const anchorRef = useRef(null);
+  const navigate = useNavigate();
 
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
 
@@ -113,7 +115,7 @@ export default function NotificationsPopover() {
         onClick={handleOpen}
         sx={{ width: 40, height: 40 }}
       >
-        <Badge badgeContent={totalUnRead} color="error">
+        <Badge badgeContent={props.totalItems} color="error">
           <ShoppingCartOutlinedIcon width={20} height={20} />
         </Badge>
       </IconButton>
@@ -124,28 +126,48 @@ export default function NotificationsPopover() {
         onClose={handleClose}
         sx={{ width: 360, p: 0, mt: 1.5, ml: 0.75 }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 2.5 }}>
-          <Box sx={{ flexGrow: 1, display: 'flex' }}>
-            <Typography> Subtotal(1 item): &nbsp;</Typography>
+        {props.totalItems === 0 ? (
+          <div>
+            <Box sx={{ height: 50, display: 'flex', alignItems: 'center', py: 2, px: 2.5 }}>
+              <Typography> Cart is Empty</Typography>
+            </Box>
+          </div>
+        ) : (
+          <div>
+            <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 2.5 }}>
+              <Box sx={{ flexGrow: 1, display: 'flex' }}>
+                <Typography>
+                  {' '}
+                  Subtotal({props.totalItems}
+                  {props.totalItems === 1 ? 'item' : 'items'} ): &nbsp;
+                </Typography>
 
-            <Typography variant="subtitle1" sx={{}}>
-              {' '}
-              EGP 123456
-            </Typography>
-          </Box>
-        </Box>
+                <Typography variant="subtitle1" sx={{}}>
+                  {' '}
+                  EKH {props.totalPrice}
+                </Typography>
+              </Box>
+            </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+            <Divider sx={{ borderStyle: 'dashed' }} />
 
-        {/* <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}></Scrollbar> */}
+            {/* <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}></Scrollbar> */}
 
-        <Divider sx={{}} />
+            <Divider sx={{}} />
 
-        <Box sx={{ p: 1 }}>
-          <Button fullWidth disableRipple>
-            Proceed to buy
-          </Button>
-        </Box>
+            <Box sx={{ p: 1 }}>
+              <Button
+                fullWidth
+                disableRipple
+                onClick={() => {
+                  navigate('/oder');
+                }}
+              >
+                Proceed to buy
+              </Button>
+            </Box>
+          </div>
+        )}
       </MenuPopover>
     </>
   );
