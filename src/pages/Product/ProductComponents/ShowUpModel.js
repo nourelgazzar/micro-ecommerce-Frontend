@@ -22,6 +22,7 @@ import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import Fab from '@mui/material/Fab';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
@@ -29,6 +30,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
+import Buttons from '@mui/material/Button';
 import { LoadingButton } from '@mui/lab';
 import { RHFTextField } from '../../../components/hook-form';
 
@@ -106,20 +108,18 @@ const ShowUpModel = (props) => {
   const [brands, setBrands] = useState([]);
   const [brand, setBrand] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [categoriesSent, setCategoriesSent] = useState([]);
+  const [categoy, setcategoy] = useState('');
+  const [Image, setImage] = useState('');
+  const [imageError, setimageError] = useState(false);
 
   useEffect(() => {
     if (props.open === true) {
       if (props.openedit) {
-        console.log(1, '1');
+        console.log('Modal Up For Edit');
       } else if (products.length !== 0) {
-        console.log(products === [], products, products.length);
-        console.log(products.legnth, 'length');
-        console.log(2);
-
         props.setheight(500);
       } else {
-        console.log(3);
-
         props.setheight(270);
       }
     }
@@ -147,7 +147,6 @@ const ShowUpModel = (props) => {
     description: Yup.string()
       .max(500, 'Description Must Be At Most 500 Charachters')
       .required('Description Is Required'),
-    image: Yup.mixed().required('Please Provide a file'),
   });
 
   const {
@@ -161,7 +160,12 @@ const ShowUpModel = (props) => {
 
   const changeSelectedBrand = (event) => {
     setBrand(event.target.value);
-    console.log('Value : ', event.target.value);
+  };
+
+  const SelectedCategories = (event) => {
+    const value = event.target.value;
+    props.setCategoriesIds(value);
+    setCategoriesSent(typeof value === 'string' ? value.split(',') : value && value);
   };
 
   // Axios Call For GET Brands
@@ -177,9 +181,7 @@ const ShowUpModel = (props) => {
         },
       })
       .then((response) => {
-        console.log('response : ', response);
         const myData = response.data;
-        console.log('data,', myData);
         setBrands(myData);
       })
       .catch((error) => {});
@@ -198,49 +200,51 @@ const ShowUpModel = (props) => {
         },
       })
       .then((response) => {
-        console.log('response : ', response);
         const myData = response.data;
-        console.log('data,', myData);
-        setCategories(myData);
+        props.setallData(myData);
       })
       .catch((error) => {});
   }, []);
 
   // Axios Call for Add Product
   const onSubmit = async (data) => {
+    console.log('Image', Image);
+    return;
     if (props.openedit === false) {
-      console.log(props.finalarray, 'array addddddddddddddddddd');
       axios
         .post(
           'http://localhost:8000/api/admin/products',
-          { data },
+          {
+            name: data.name,
+            price: data.price,
+            quantity: data.quantity,
+            image: Image,
+            description: data.description,
+            brand_id: brand,
+            categories_ids: props.CategoriesIds,
+          },
           {
             headers: {
               Authorization: `Bearer  ${token}`,
               'Access-Control-Allow-Origin': '*',
-              'Content-Type': 'application/json',
               accept: 'application/json',
             },
           }
         )
         .then((response) => {
-          console.log('Response : ', response);
           if (response.data.status === 201) {
             props.snackbar(true);
             props.snackbartext('Product Added Successfully');
-            console.log('hereeeeee', response.data.product_ids);
             props.setnewproductsids(response.data.product_ids);
             setproducts([]);
           }
         })
         .catch((error) => {
-          console.log('Error :', error);
-          if (error.status === 401) {
-            console.log(error.message);
-          }
+          console.error('Error while adding', error);
         });
     } else {
       props.editBtn(data.name);
+      props.editBtn(data.brand_id);
     }
 
     props.setopen(false);
@@ -257,7 +261,6 @@ const ShowUpModel = (props) => {
     if (products.length === 0) setdeleteCheck(false);
   }, [deleteCheck, products]);
 
-  console.log({ products });
   return (
     <Modal
       disablePortal
@@ -395,28 +398,47 @@ const ShowUpModel = (props) => {
                   <Select
                     multiple
                     displayEmpty
-                    value={categories}
                     input={<OutlinedInput />}
-                    onChange={(e) => {
-                      setCategories(e.target.value);
-                    }}
+                    value={categoriesSent}
+                    onChange={SelectedCategories}
                   >
-                    {categories.map((item, index) => (
-                      <MenuItem value={item.id} key={index}>
-                        {item.name}
-                      </MenuItem>
-                    ))}
+                    {props.allData.length !== 0 &&
+                      props.allData.map((item, index) => (
+                        <MenuItem value={item.id} key={index}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </div>
               <div>
-                <IconButton color="primary" aria-label="upload picture" component="label">
-                  <input hidden accept="image/*" type="file" name="image" {...register('image', { required: true })} />
-                  <PhotoCamera />
-                </IconButton>
+                <div>
+                  <IconButton color="primary" aria-label="upload picture" component="label">
+                    <input
+                      hidden
+                      accept="image/*"
+                      type="file"
+                      onChange={(e) => {
+                        props
+                          .convertFileToBase64(e.target.files[0])
+                          .then((res) => {
+                            console.log({ res });
+                            setImage(res);
+                            setimageError(false);
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                          });
+                      }}
+                    />
+                    <PhotoCamera />
+                  </IconButton>
+                </div>
+                <div>
+                  <Typography>Upload Image</Typography>
+                </div>
               </div>
 
-              <div className={classes.error}> {(products.length === 0 && errors.image?.message) || error}</div>
               {/* <Fab className={classes.buttonAddImage}>
                 <AddPhotoAlternateIcon />
               </Fab> */}
@@ -446,7 +468,6 @@ const ShowUpModel = (props) => {
                         const newarray = props.finalarray.filter((temp) => {
                           return temp !== item.product;
                         });
-                        console.log(newarray, 'newwwwwwwwwwwwww');
                         props.setfinalarray(newarray);
                         const newProducts = products.filter((temp) => {
                           return temp.id !== item.id;
