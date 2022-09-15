@@ -52,8 +52,8 @@ const useStyles = makeStyles((theme) => ({
   },
   modal: {
     backgroundColor: '#FFFAFA',
-    height: 650,
-    marginTop: '20%',
+    height: 880,
+    marginTop: '30%',
     borderRadius: 20,
     width: 650,
     borderWidth: 3,
@@ -112,10 +112,27 @@ const ShowUpModel = (props) => {
   const [categoy, setcategoy] = useState('');
   const [Image, setImage] = useState('');
   const [imageError, setimageError] = useState(false);
+  const [brandError, setbrandError] = useState(false);
+  const [categoriesError, setcategoriesError] = useState(false);
+
+  const [item, setItem] = useState({
+    id: null,
+    name: '',
+    price: 0,
+    quantity: 0,
+    description: '',
+    brand_id: null,
+    categories: [],
+  });
+
+  useEffect(() => {
+    setItem(props.item);
+  }, [props.item]);
 
   useEffect(() => {
     if (props.open === true) {
       if (props.openedit) {
+        setItem(props.item);
         console.log('Modal Up For Edit');
       } else if (products.length !== 0) {
         props.setheight(500);
@@ -160,12 +177,14 @@ const ShowUpModel = (props) => {
 
   const changeSelectedBrand = (event) => {
     setBrand(event.target.value);
+    setbrandError(false);
   };
 
   const SelectedCategories = (event) => {
     const value = event.target.value;
     props.setCategoriesIds(value);
     setCategoriesSent(typeof value === 'string' ? value.split(',') : value && value);
+    setcategoriesError(false);
   };
 
   // Axios Call For GET Brands
@@ -208,9 +227,7 @@ const ShowUpModel = (props) => {
 
   // Axios Call for Add Product
   const onSubmit = async (data) => {
-    console.log('Image', Image);
-    return;
-    if (props.openedit === false) {
+    if (!item.id) {
       axios
         .post(
           'http://localhost:8000/api/admin/products',
@@ -232,19 +249,34 @@ const ShowUpModel = (props) => {
           }
         )
         .then((response) => {
+          console.log(response);
           if (response.data.status === 201) {
             props.snackbar(true);
             props.snackbartext('Product Added Successfully');
-            props.setnewproductsids(response.data.product_ids);
-            setproducts([]);
+            reset();
+            props.getAllProducts();
+          }
+          if (response.data.status === 422 || response.data.errors) {
+            setbrandError(true);
+            setcategoriesError(true);
+            setimageError(true);
           }
         })
         .catch((error) => {
           console.error('Error while adding', error);
         });
     } else {
-      props.editBtn(data.name);
-      props.editBtn(data.brand_id);
+      props.updateProduct(item.id, {
+        name: data.name,
+        price: data.price,
+        quantity: data.quantity,
+        image: Image,
+        description: data.description,
+        brand_id: brand,
+        categories_ids: props.CategoriesIds,
+      });
+      // props.editBtn(data.name);
+      // props.editBtn(data.brand_id);
     }
 
     props.setopen(false);
@@ -261,6 +293,7 @@ const ShowUpModel = (props) => {
     if (products.length === 0) setdeleteCheck(false);
   }, [deleteCheck, products]);
 
+  console.log({ item });
   return (
     <Modal
       disablePortal
@@ -290,6 +323,7 @@ const ShowUpModel = (props) => {
                 height: 30,
               }}
               onClick={() => {
+                props.closeModalForEdit(false);
                 props.setopen(false);
                 props.setopeneditmodel(false);
               }}
@@ -304,7 +338,7 @@ const ShowUpModel = (props) => {
           </div>
           <div>
             <Stack>
-              {props.openedit ? (
+              {item.id ? (
                 <Typography sx={{ marginLeft: '-56%' }} variant="h4">
                   {' '}
                   Edit Product
@@ -321,10 +355,11 @@ const ShowUpModel = (props) => {
                   label="Product Name"
                   defaultValue={props.openedit ? props.name : ''}
                   error={(products.length === 0 && errors.name) || error}
-                  onChange={(e) => {
-                    setproduct(e.target.value);
-                  }}
                   {...register('name', { required: true })}
+                  value={item.name}
+                  onChange={(e) => {
+                    setItem({ ...item, name: e.target.value });
+                  }}
                 />
               </div>
 
@@ -336,10 +371,11 @@ const ShowUpModel = (props) => {
                   label="Price"
                   defaultValue={props.openedit ? props.price : ''}
                   error={(products.length === 0 && errors.price) || error}
-                  onChange={(e) => {
-                    setproduct(e.target.value);
-                  }}
                   {...register('price', { required: true })}
+                  value={item.price}
+                  onChange={(e) => {
+                    setItem({ ...item, price: e.target.value });
+                  }}
                 />
               </div>
 
@@ -349,12 +385,13 @@ const ShowUpModel = (props) => {
                 <TextField
                   name="quantity"
                   label="Quantity"
-                  defaultValue={props.openedit ? props.quantity : ''}
+                  defaultValue={item.quantity}
                   error={(products.length === 0 && errors.quantity) || error}
-                  onChange={(e) => {
-                    setproduct(e.target.value);
-                  }}
                   {...register('quantity', { required: true })}
+                  value={item.quantity}
+                  onChange={(e) => {
+                    setItem({ ...item, quantity: e.target.value });
+                  }}
                 />
               </div>
 
@@ -366,10 +403,11 @@ const ShowUpModel = (props) => {
                   label="Description"
                   defaultValue={props.openedit ? props.description : ''}
                   error={(products.length === 0 && errors.description) || error}
-                  onChange={(e) => {
-                    setproduct(e.target.value);
-                  }}
                   {...register('description', { required: true })}
+                  value={item.description}
+                  onChange={(e) => {
+                    setItem({ ...item, description: e.target.value });
+                  }}
                 />
               </div>
 
@@ -380,7 +418,11 @@ const ShowUpModel = (props) => {
               <div className={classes.formControl}>
                 <InputLabel>Select Brand : </InputLabel>
                 <FormControl>
-                  <Select onChange={changeSelectedBrand} label="Select Brand">
+                  <Select
+                    onChange={changeSelectedBrand}
+                    label="Select Brand"
+                    defaultValue={props.openedit ? props.brand_id : ''}
+                  >
                     {brands.map((item, index) => (
                       <MenuItem value={item.id} key={index}>
                         {item.name}
@@ -389,6 +431,7 @@ const ShowUpModel = (props) => {
                   </Select>
                 </FormControl>
               </div>
+              {brandError && <div className={classes.error}> Brand Field is Required</div>}
 
               {/* Categories DropDown */}
 
@@ -411,6 +454,7 @@ const ShowUpModel = (props) => {
                   </Select>
                 </FormControl>
               </div>
+              {categoriesError && <div className={classes.error}> Category Field is Required</div>}
               <div>
                 <div>
                   <IconButton color="primary" aria-label="upload picture" component="label">
@@ -419,16 +463,18 @@ const ShowUpModel = (props) => {
                       accept="image/*"
                       type="file"
                       onChange={(e) => {
-                        props
-                          .convertFileToBase64(e.target.files[0])
-                          .then((res) => {
-                            console.log({ res });
-                            setImage(res);
-                            setimageError(false);
-                          })
-                          .catch((err) => {
-                            console.log(err);
-                          });
+                        // props
+                        //   .convertFileToBase64(e.target.files[0])
+                        //   .then((res) => {
+                        //     console.log({ res });
+                        //     setImage(res);
+                        //     setimageError(false);
+                        //   })
+                        //   .catch((err) => {
+                        //     console.log(err);
+                        //   });
+                        setImage(e.target.value);
+                        setimageError(false);
                       }}
                     />
                     <PhotoCamera />
@@ -438,14 +484,14 @@ const ShowUpModel = (props) => {
                   <Typography>Upload Image</Typography>
                 </div>
               </div>
-
+              {imageError && <div className={classes.error}> Image Field is Required</div>}
               {/* <Fab className={classes.buttonAddImage}>
                 <AddPhotoAlternateIcon />
               </Fab> */}
 
               <div className={classes.buttonAddProduct}>
                 <Button
-                  text={props.openedit ? 'Edit Product' : 'Add Product'}
+                  text={item.id ? 'Edit Product' : 'Add Product'}
                   icon={AddCircleOutlineIcon}
                   onClick={(e) => {
                     handleSubmit(onSubmit)(e);

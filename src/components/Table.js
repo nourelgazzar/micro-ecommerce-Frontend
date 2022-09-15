@@ -48,7 +48,7 @@ export default function CustomizedTables(props) {
             <StyledTableCell sx={{ fontSize: 16 }}>{props.price ?? props.price}</StyledTableCell>
             <StyledTableCell sx={{ fontSize: 16 }}>{props.quantity ?? props.quantity}</StyledTableCell>
             <StyledTableCell sx={{ fontSize: 16 }}>{props.description ?? props.description}</StyledTableCell>
-            <StyledTableCell sx={{ fontSize: 16 }}>{props.image ?? props.image}</StyledTableCell>
+            {/* <StyledTableCell sx={{ fontSize: 16 }}>{props.image ?? props.image}</StyledTableCell> */}
             <StyledTableCell sx={{ fontSize: 16, marginRight: 20 }} align="right">
               Action
             </StyledTableCell>
@@ -73,7 +73,7 @@ export default function CustomizedTables(props) {
                 {item.description ?? item.description}
               </StyledTableCell>
 
-              <StyledTableCell component="th" scope="row">
+              {/* <StyledTableCell component="th" scope="row">
                 {item.image ?? (
                   <img
                     src={`http://localhost:8000/images/${item.image}`}
@@ -81,19 +81,15 @@ export default function CustomizedTables(props) {
                     style={{ width: 50, height: 50, borderRadius: 50 }}
                   />
                 )}
-              </StyledTableCell>
+              </StyledTableCell> */}
               <StyledTableCell align="right">
                 {' '}
                 <IconButton
                   onClick={() => {
-                    props.name(item.name);
-                    props.prices(item.price);
-                    props.quantities(item.quantity);
-                    props.descriptions(item.description);
-                    props.images(item.image);
-                    props.setopenedit(true);
-                    props.setopeneditmodel(true);
-                    props.height(270);
+                    props.openModalForEdit(item);
+                    // props.setopenedit(true);
+                    // props.setopeneditmodel(true);
+                    props.height(350);
                   }}
                 >
                   {' '}
@@ -101,13 +97,8 @@ export default function CustomizedTables(props) {
                 </IconButton>
                 <IconButton
                   onClick={() => {
-                    props.name(item.name);
-                    props.prices(item.price);
-                    props.quantities(item.quantity);
-                    props.descriptions(item.description);
-                    props.images(item.image);
-
                     props.setopendelete(true);
+                    props.name(item.name);
                   }}
                 >
                   {' '}

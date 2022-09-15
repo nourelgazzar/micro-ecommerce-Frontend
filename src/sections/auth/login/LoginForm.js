@@ -29,6 +29,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
+  const [LoginError, setLoginError] = useState(false);
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
@@ -79,10 +80,16 @@ export default function LoginForm() {
           })
           .catch((error) => {
             console.log('Error : ', error);
+            if (error.response.status === 401) {
+              setLoginError(true);
+            }
           });
       })
       .catch((error) => {
         console.log('Error : ', error);
+        if (error.response.status === 401) {
+          setLoginError(true);
+        }
       });
   };
 
@@ -125,6 +132,7 @@ export default function LoginForm() {
             ),
           }}
         />
+        {LoginError && <div className={classes.error}>Wrong Email or Password</div>}
         <div className={classes.error}>{errors.password?.message}</div>
       </Stack>
 

@@ -41,7 +41,13 @@ export default function Product() {
   const [openSnackBar, setopenSnackBar] = useState(false);
   const [snackBarText, setsnackBarText] = useState('');
 
+  const [editProduct, setEditProduct] = useState({});
+
   useEffect(() => {
+    getAllProducts();
+  }, []);
+
+  const getAllProducts = () => {
     axios
       .get('http://localhost:8000/api/admin/products', {
         headers: {
@@ -56,10 +62,11 @@ export default function Product() {
         setData(myData);
       })
       .catch((error) => {});
-  }, []);
+  };
 
   useEffect(() => {
     for (let i = 0; i < data.length; i += 1) {
+      console.log('name', prevname);
       if (data[i].name === prevname) {
         setid(data[i].id);
         setBrandId(data[i].brand_id);
@@ -88,104 +95,51 @@ export default function Product() {
 
             setsnackBarText('Product deleted successfully ');
             setdeleteBtn(false);
+            getAllProducts();
           }
         })
         .catch((error) => {});
     }
-    if (openedit === true) {
-      if (editBtn !== '') {
-        if (editBtn !== prevname) {
-          axios
-            .put(
-              `http://localhost:8000/api/admin/products/${id}`,
-              {
-                name: prevname,
-                price: Price,
-                quantity: Quantity,
-                description: Description,
-                image: Image,
-                brand_id: prevBrandId,
-                categories_ids: CategoriesIds,
-              },
-              {
-                headers: {
-                  Authorization: `Bearer  ${token}`,
-                  'Access-Control-Allow-Origin': '*',
-                  'Content-Type': 'application/json',
-                  accept: 'application/json',
-                },
-              }
-            )
-            .then((response) => {
-              setopenedit(false);
-
-              seteditBtn('');
-              if (response.status === 200) {
-                const newproduct = response.data.product;
-                const newProducts = data.filter((temp) => {
-                  if (temp.id === newproduct.id) {
-                    temp.name = newproduct.name;
-                    temp.price = newproduct.price;
-                    temp.quantity = newproduct.quantity;
-                    temp.description = newproduct.description;
-                    temp.image = newproduct.image;
-                  }
-                  return temp;
-                });
-
-                setData(newProducts);
-                setnewproductsids([]);
-                setopenSnackBar(true);
-                setsnackBarText('Product Updated successfully ');
-              }
-            })
-            .catch((error) => {});
-        }
-      }
-    }
-    if (newproductsids.length !== 0) {
-      let array = data;
-      for (let i = 0; i < newproductsids.length; i += 1) {
-        array = [
-          ...array,
-          {
-            name: finalarray[i],
-            price: finalarray[i],
-            description: finalarray[i],
-            quantity: finalarray[i],
-            image: finalarray[i],
-            id: newproductsids[i],
-          },
-        ];
-      }
-      setData(array);
-      setnewproductsids([]);
-      setfinalarray([]);
-    }
-    if (newcategoriesids.length !== 0) {
-      let arr = data;
-      for (let i = 0; i < newcategoriesids.length; i += 1) {
-        arr = [
-          ...arr,
-          {
-            categories_ids: newcategoriesids[i],
-          },
-        ];
-      }
-      setCategoriesIds(arr);
-      setnewcategoriesids([]);
-    }
   }, [deleteBtn, data, openedit, newproductsids, id, prevname, editBtn]);
 
-  const convertFileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-    });
+  // const convertFileToBase64 = (file) => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => resolve(reader.result);
+  //     reader.onerror = reject;
+  //   });
+  // };
+  const openModalForEdit = (item) => {
+    setEditProduct(item);
+    setopenShowUpModelAddEdit(true);
   };
 
+  const closeModalForEdit = (item) => {
+    setEditProduct({});
+    setopenShowUpModelAddEdit(false);
+  };
+
+  const updateProduct = (id, editItem) => {
+    axios
+      .put(`http://localhost:8000/api/admin/products/${id}`, editItem, {
+        headers: {
+          Authorization: `Bearer  ${token}`,
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+          accept: 'application/json',
+        },
+      })
+      .then((response) => {
+        setopenedit(false);
+        if (response.status === 200) {
+          setopenSnackBar(true);
+          setsnackBarText('Product Updated successfully ');
+          getAllProducts();
+        }
+      })
+      .catch((error) => {});
+  };
   return (
     <Page title="Dashboard: Products">
       <Container>
@@ -217,12 +171,11 @@ export default function Product() {
               opendelete={opendelete}
               setopendelete={setopendelete}
               data={data}
-              name={setname}
-              prices={setPrice}
-              quantities={setQuantity}
-              descriptions={setDescription}
-              images={setImage}
               height={setheight}
+              openModalForEdit={openModalForEdit}
+              deleteBtn={deleteBtn}
+              id={setid}
+              name={setname}
             />
           </Stack>
         </Stack>
@@ -250,7 +203,13 @@ export default function Product() {
           setallData={setallData}
           setCategoriesIds={setCategoriesIds}
           CategoriesIds={CategoriesIds}
-          convertFileToBase64={convertFileToBase64}
+          getAllProducts={getAllProducts}
+          price={Price}
+          quantity={Quantity}
+          description={Description}
+          item={editProduct}
+          closeModalForEdit={closeModalForEdit}
+          updateProduct={updateProduct}
         />
       </Container>
       <SnackBar open={openSnackBar} setopen={setopenSnackBar} message={snackBarText} />

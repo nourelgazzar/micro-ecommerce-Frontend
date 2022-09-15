@@ -33,9 +33,9 @@ export default function Category() {
 
   const [openSnackBar, setopenSnackBar] = useState(false);
   const [snackBarText, setsnackBarText] = useState('');
+  const [editCategories, setEditCategories] = useState({});
 
-  console.log(openedit, 'open edit bool ');
-  useEffect(() => {
+  const getAllCategories = () => {
     axios
       .get('http://localhost:8000/api/admin/categories', {
         headers: {
@@ -50,27 +50,57 @@ export default function Category() {
         setData(myData);
       })
       .catch((error) => {});
+  };
+
+  useEffect(() => {
+    getAllCategories();
   }, []);
+
+  const openModalForEdit = (item) => {
+    setEditCategories(item);
+    setopenShowUpModelAddEdit(true);
+  };
+
+  const closeModalForEdit = (item) => {
+    setEditCategories({});
+    setopenShowUpModelAddEdit(false);
+  };
+
+  const updateCategory = (id, editItem) => {
+    axios
+      .put(`http://localhost:8000/api/admin/categories/${id}`, editItem, {
+        headers: {
+          Authorization: `Bearer  ${token}`,
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+          accept: 'application/json',
+        },
+      })
+      .then((response) => {
+        setopenedit(false);
+        if (response.status === 200) {
+          setopenSnackBar(true);
+          setsnackBarText('Category Updated successfully ');
+          getAllCategories();
+        }
+      })
+      .catch((error) => {});
+  };
 
   useEffect(() => {
     for (let i = 0; i < data.length; i += 1) {
-      console.log(data, data[i].name, prevname, 'alllllllllllllll');
       if (data[i].name === prevname) {
         setid(data[i].id);
         break;
       }
-      console.log(id, 'IDDDDDDDDDDDDDD');
     }
     if (deleteBtn === true && id !== null) {
-      console.log(deleteBtn, id, prevname, 'alllllllllllllllllll');
-      console.log('in deleteeeeeeeee');
-      console.log(id, 'test');
+      console.log('id ', id);
       axios
         .delete(`http://localhost:8000/api/admin/categories/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'multipart/form-data',
             accept: 'application/json',
           },
         })
@@ -80,7 +110,6 @@ export default function Category() {
             const newData = data.filter((temp) => {
               return temp.id !== id;
             });
-            console.log(newData, 'newwwwwwwwwwww');
 
             setData(newData);
             setopendelete(false);
@@ -88,54 +117,12 @@ export default function Category() {
 
             setsnackBarText('Category deleted successfully ');
             setdeleteBtn(false);
+            getAllCategories();
           }
         })
         .catch((error) => {});
     }
-    if (openedit === true) {
-      if (editBtn !== '') {
-        if (editBtn !== prevname) {
-          axios
-            .put(
-              `http://localhost:8000/api/admin/categories/${id}`,
-              {
-                name: editBtn,
-              },
-              {
-                headers: {
-                  Authorization: `Bearer  ${token}`,
-                  'Access-Control-Allow-Origin': '*',
-                  'Content-Type': 'application/json',
-                  accept: 'application/json',
-                },
-              }
-            )
-            .then((response) => {
-              setopenedit(false);
-              seteditBtn('');
-              if (response.status === 200) {
-                const newcategory = response.data.category;
-                const newCategories = data.filter((temp) => {
-                  console.log(temp, 'temp');
-                  if (temp.id === newcategory.id) {
-                    temp.name = newcategory.name;
-                    console.log(temp, newcategory, 'checkkkkkkk');
-                  }
-                  return temp;
-                });
-                console.log(newCategories, 'newwwwwwwwwwwwwwwww');
-                setData(newCategories);
-                setnewcategoriesids([]);
-                setopenSnackBar(true);
-                setsnackBarText('Category Updated successfully ');
-              }
-            })
-            .catch((error) => {
-              console.log('Error : ', error);
-            });
-        }
-      }
-    }
+
     if (newcategoriesids.length !== 0) {
       let array = data;
       for (let i = 0; i < newcategoriesids.length; i += 1) {
@@ -176,6 +163,9 @@ export default function Category() {
               data={data}
               name={setname}
               height={setheight}
+              openModalForEdit={openModalForEdit}
+              deleteBtn={deleteBtn}
+              id={setid}
             />
           </Stack>
         </Stack>
@@ -198,6 +188,9 @@ export default function Category() {
           setnewcategoriesids={setnewcategoriesids}
           finalarray={finalarray}
           setfinalarray={setfinalarray}
+          closeModalForEdit={closeModalForEdit}
+          item={editCategories}
+          updateCategory={updateCategory}
         />
       </Container>
       <SnackBar open={openSnackBar} setopen={setopenSnackBar} message={snackBarText} />

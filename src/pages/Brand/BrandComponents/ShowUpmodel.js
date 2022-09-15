@@ -17,7 +17,7 @@ import { RHFTextField } from '../../../components/hook-form';
 
 import Button from '../../../components/Button';
 
-import CategoryDiv from './BrandDiv';
+import BrandDiv from './BrandDiv';
 
 // import Button from '../../../components/Button';
 
@@ -73,22 +73,21 @@ const ShowUpModel = (props) => {
   const [error, seterror] = useState('');
   const token = localStorage.getItem('token');
 
+  const [item, setItem] = useState({
+    id: null,
+    name: '',
+  });
+  useEffect(() => {
+    setItem(props.item);
+  }, [props.item]);
+
   useEffect(() => {
     if (props.open === true) {
-      console.log(props.openedit, props.open, categories, 'aaaaaaaaaaaaaaa');
-
       if (props.openedit) {
-        props.setheight(270);
-        console.log(1, '1');
+        setItem(props.item);
       } else if (categories.length !== 0) {
-        console.log(categories === [], categories, categories.length);
-        console.log(categories.legnth, 'length');
-        console.log(2);
-
         props.setheight(500);
       } else {
-        console.log(3);
-
         props.setheight(270);
       }
     }
@@ -113,7 +112,7 @@ const ShowUpModel = (props) => {
       props.editBtn(data.name);
     } else if (props.finalarray.includes(data.name.toLowerCase())) {
       seterror('Brand is already included');
-      console.log(error, 'ERRRRRRRRRRRRO');
+      console.log(error, 'Error');
     } else {
       props.setheight(500);
       seterror(null);
@@ -121,6 +120,7 @@ const ShowUpModel = (props) => {
       props.setfinalarray([...props.finalarray, data.name]);
       setcategories([...categories, { category: data.name, id: count }]);
       setcategory('');
+
       count += 1;
     }
   };
@@ -128,8 +128,7 @@ const ShowUpModel = (props) => {
   useEffect(() => {}, [props.name]);
 
   const onSubmit = async (data) => {
-    if (props.openedit === false) {
-      console.log(props.finalarray, 'array addddddddddddddddddd');
+    if (!item.id) {
       axios
         .post(
           'http://localhost:8000/api/admin/brands',
@@ -148,9 +147,10 @@ const ShowUpModel = (props) => {
           if (response.data.status === 201) {
             props.snackbar(true);
             props.snackbartext('Brand Added Successfully');
-            console.log('hereeeeee', response.data.category_ids);
-            props.setnewcategoriesids(response.data.category_ids);
+            console.log('hereeeeee', response.data.brand_ids);
+            props.setnewcategoriesids(response.data.brand_ids);
             setcategories([]);
+            props.getAllCategories();
           }
         })
         .catch((error) => {
@@ -160,8 +160,9 @@ const ShowUpModel = (props) => {
           }
         });
     } else {
-      console.log(data, 'DATTTTTTTTTTTTTTTTTTTTTTTTTTTTT');
-      props.editBtn(data.name);
+      props.updateCategory(item.id, {
+        name: data.name,
+      });
     }
 
     props.setopen(false);
@@ -169,7 +170,7 @@ const ShowUpModel = (props) => {
 
   useEffect(() => {
     if (deleteCheck === true) {
-      const newar = categories.filter((item) => !(item.id === deleteID));
+      const newar = categories.filter((temp) => !(temp.id === deleteID));
       for (let i = 0; i < newar.length; i += 1) {
         newar[i].id = i;
       }
@@ -211,6 +212,7 @@ const ShowUpModel = (props) => {
               onClick={() => {
                 props.setopen(false);
                 props.setopeneditmodel(false);
+                props.closeModalForEdit(false);
               }}
             >
               <CloseIcon
@@ -223,10 +225,10 @@ const ShowUpModel = (props) => {
           </div>
           <div>
             <Stack>
-              {props.openedit ? (
+              {item.id ? (
                 <Typography sx={{ marginLeft: '-56%' }} variant="h4">
                   {' '}
-                  Edit Category
+                  Edit Brand
                 </Typography>
               ) : (
                 <Typography sx={{ marginLeft: '-56%' }} variant="h4">
@@ -240,11 +242,11 @@ const ShowUpModel = (props) => {
                   label="Brand"
                   defaultValue={props.openedit ? props.name : ''}
                   error={(categories.length === 0 && errors.name) || error}
-                  onChange={(e) => {
-                    props.setheight(500);
-                    setcategory(e.target.value);
-                  }}
                   {...register('name', { required: true })}
+                  value={item.name}
+                  onChange={(e) => {
+                    setItem({ ...item, name: e.target.value });
+                  }}
                 />
 
                 {!props.openedit && (
@@ -268,7 +270,7 @@ const ShowUpModel = (props) => {
               <div className={classes.buttonAddCategory}>
                 {(categories.length > 0 || props.openedit) && (
                   <Button
-                    text={props.openedit ? 'Edit Brand' : 'Add Brand'}
+                    text={item.id ? 'Edit Brand' : 'Add Brand'}
                     icon={AddCircleOutlineIcon}
                     onClick={(e) => {
                       handleSubmit(onSubmit)(e);
@@ -283,7 +285,7 @@ const ShowUpModel = (props) => {
               {!props.openedit &&
                 categories.map((item) => (
                   <div className={classes.categorydiv}>
-                    <CategoryDiv
+                    <BrandDiv
                       text={item.category}
                       id={item.id}
                       setdeleteID={setdeleteID}
