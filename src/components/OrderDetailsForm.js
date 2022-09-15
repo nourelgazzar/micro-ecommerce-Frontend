@@ -20,16 +20,29 @@ const ProductImgStyle = styled('img')({
   objectFit: 'cover',
   position: 'absolute',
 });
-export default function OderDetailsForm() {
+export default function OderDetailsForm(props) {
   const [quantity, setquantity] = useState(false);
   const [hoover, sethoover] = useState(false);
+  const [cartid, setcartid] = useState(0);
+  const [productid, setproductid] = useState(0);
+  const [price, setprice] = useState(0);
   const classes = useStyles();
+
+  useEffect(() => {
+    console.log(props.item, 'itemsssssssss');
+    setcartid(props.item.cart_id);
+    setproductid(props.item.product);
+    setquantity(props.item.no_items);
+    let price = 0;
+    price = props.item.no_items * props.item.product.price;
+    setprice(price);
+  }, []);
 
   return (
     <div style={{ width: 1150 }}>
       <div style={{ display: 'flex' }}>
         <div style={{ width: 200, height: 200, objectFit: 'cover', position: 'absolute' }}>
-          <img src="src\components\employee.png" alt="" />
+          <img src={`http://localhost:8000/images/${props.item.product.image}`} alt={props.item.product.name} />
         </div>
         <div style={{ marginTop: '2%', width: 400, height: 200, marginLeft: '20%', mb: 2, display: 'inline-block' }}>
           <div>
@@ -38,7 +51,7 @@ export default function OderDetailsForm() {
               variant="h12"
               sx={{ fontWeight: 500, display: 'inline-block' }}
             >
-              Name of the brand
+              {props.item.product.name}
             </div>{' '}
           </div>
           <div style={{ display: 'flex' }}>
@@ -76,19 +89,20 @@ export default function OderDetailsForm() {
               </div>
             </div>
           </div>
+          <div className={classes.div} style={{}}>
+            <Typography variant="h12" sx={{ fontWeight: 500, color: '#2065D1' }}>
+              Delete
+            </Typography>{' '}
+          </div>
         </div>
 
         <div style={{ marginTop: '2%', marginLeft: '37%' }}>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
-            EKH 5000
+            {price}
           </Typography>{' '}
         </div>
       </div>
-      <div className={classes.div} style={{ marginLeft: '95%' }}>
-        <Typography variant="h12" sx={{ fontWeight: 500, color: '#2065D1' }}>
-          Delete
-        </Typography>{' '}
-      </div>
+      <Divider sx={{ borderRightWidth: 8 }} />
     </div>
   );
 }

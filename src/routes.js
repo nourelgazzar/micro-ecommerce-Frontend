@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-
+import axios from 'axios';
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
+import DashboardLayoutUser from './layouts/dashboard/User';
 import LogoOnlyLayout from './layouts/LogoOnlyLayout';
 import Blog from './pages/Blog';
 import User from './pages/User';
@@ -14,14 +15,61 @@ import DashboardApp from './pages/DashboardApp';
 import Category from './pages/Category/Category';
 import Brand from './pages/Brand/Brand';
 import OderDetails from './pages/OrderDetails';
-import LoginUser from "./pages/LoginUser"
-import RegisterUser from "./pages/RegisterUser"
+import LoginUser from './pages/LoginUser';
+import RegisterUser from './pages/RegisterUser';
+import ProductsAdmin from './pages/PagesAdmin';
+
 // ----------------------------------------------------------------------
 
 export default function Router() {
   const [cart, setCart] = useState([]);
   const [totalPrice, settotalPrice] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
+  const token = localStorage.getItem('token');
+  const userid = localStorage.getItem('userID');
+  const user = localStorage.getItem('user');
+
+  // localStorage.setItem('tokenuser', response.data.token);
+  // localStorage.setItem('userID', response.data.admin.id);
+  // localStorage.setItem('username', response.data.admin.first_name);
+  // localStorage.setItem('username', response.data.admin.last_name);
+
+  useEffect(() => {
+    if (user === 1) {
+      axios
+        .get(
+          `http://localhost:8000/api/user/carts/${userid}`,
+
+          {
+            headers: {
+              Authorization: `Bearer  ${token}`,
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json',
+              accept: 'application/json',
+            },
+          }
+        )
+        .then((response) => {
+          if (response.data.status === 200) {
+            console.log(response, 'RESSSSSSSS');
+            setCart(response.data.cart_details);
+            settotalPrice(response.data.total_price);
+            if (response.data.cart_details.length > 0) {
+              let ti = 0;
+              const newData = response.data.cart_details.filter((temp) => {
+                ti = temp.no_items + ti;
+                return temp;
+              });
+              setTotalItems(ti);
+            }
+          }
+        })
+        .catch((error) => {
+          console.log('Error : ', error);
+        });
+    }
+  }, []);
+
   return useRoutes([
     {
       path: '/dashboard',
@@ -37,7 +85,33 @@ export default function Router() {
       ),
       children: [
         { path: 'app', element: <DashboardApp /> },
-        { path: 'user', element: <User /> },
+
+        {
+          path: 'productsAdmin',
+          element: <ProductsAdmin />,
+        },
+        { path: 'category', element: <Category /> },
+        { path: 'brand', element: <Brand /> },
+      ],
+    },
+    {
+      path: 'login',
+      element: <Login />,
+    },
+
+    {
+      path: '/user',
+      element: (
+        <DashboardLayoutUser
+          cart={cart}
+          setCart={setCart}
+          settotalPrice={settotalPrice}
+          totalPrice={totalPrice}
+          totalItems={totalItems}
+          setTotalItems={setTotalItems}
+        />
+      ),
+      children: [
         {
           path: 'products',
           element: (
@@ -51,18 +125,22 @@ export default function Router() {
             />
           ),
         },
-        { path: 'category', element: <Category /> },
-        { path: 'brand', element: <Brand /> },
+        {
+          path: 'oder',
+          element: (
+            <OderDetails
+              cart={cart}
+              setCart={setCart}
+              settotalPrice={settotalPrice}
+              totalPrice={totalPrice}
+              totalItems={totalItems}
+              setTotalItems={setTotalItems}
+            />
+          ),
+        },
       ],
     },
-    {
-      path: 'login',
-      element: <Login />,
-    },
-    {
-      path: 'products',
-      element: <Products />,
-    },
+
     {
       path: 'loginuser',
       element: <LoginUser />,
@@ -71,10 +149,7 @@ export default function Router() {
       path: 'registeruser',
       element: <RegisterUser />,
     },
-    {
-      path: 'oder',
-      element: <OderDetails />,
-    },
+
     {
       path: 'register',
       element: <Register />,

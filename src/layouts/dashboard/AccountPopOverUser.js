@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from '@mui/material';
@@ -16,6 +15,11 @@ const MENU_OPTIONS = [
     label: 'Profile',
     icon: 'eva:person-fill',
     linkTo: '#',
+  },
+  {
+    label: 'View Order History',
+    icon: 'eva:home-fill',
+    linkTo: '/',
   },
 ];
 
@@ -96,7 +100,8 @@ export default function AccountPopover() {
         <MenuItem
           onClick={() => {
             handleClose();
-            navigate('/login');
+
+            navigate('/loginuser');
           }}
           sx={{ m: 1 }}
         >

@@ -72,7 +72,13 @@ export default function LoginForm() {
             console.log('Response : ', response);
 
             if (response.status === 200) {
+              console.log(response, 'resssssss');
               localStorage.setItem('token', response.data.token);
+              localStorage.setItem('user', '0');
+              localStorage.setItem('usernameF', response.data.admin.first_name);
+              localStorage.setItem('usernameL', response.data.admin.last_name);
+              localStorage.setItem('email', response.data.admin.email);
+
               navigate('/dashboard/app');
               console.log('Response : ', response);
             }

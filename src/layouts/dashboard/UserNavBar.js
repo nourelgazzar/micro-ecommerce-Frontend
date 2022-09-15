@@ -1,16 +1,15 @@
 import PropTypes from 'prop-types';
 // material
-import { alpha, styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
+import { alpha, styled } from '@mui/material/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
 // components
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-
 import Iconify from '../../components/Iconify';
 //
 import Searchbar from './Searchbar';
-import AccountPopover from './AccountPopover';
+import AccountPopover from './AccountPopOverUser';
 import LanguagePopover from './LanguagePopover';
 import NotificationsPopover from './NotificationsPopover';
 
@@ -67,11 +66,12 @@ export default function DashboardNavbar({
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
           <IconButton
             onClick={() => {
-              navigate('/dashboard/app');
+              navigate('/user/products');
             }}
           >
             <HomeOutlinedIcon sx={{ width: 30, height: 30 }} />
           </IconButton>
+          <NotificationsPopover totalPrice={totalPrice} totalItems={totalItems} />
           <AccountPopover />
         </Stack>
       </ToolbarStyle>

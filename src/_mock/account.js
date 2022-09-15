@@ -1,8 +1,13 @@
+import { NoBackpackSharp } from '@mui/icons-material';
+
 // ----------------------------------------------------------------------
+const FN = localStorage.getItem('usernameF');
+const LN = localStorage.getItem('usernameL');
+const Email = localStorage.getItem('email');
 
 const account = {
-  displayName: 'Jaydon Frankie',
-  email: 'demo@minimals.cc',
+  displayName: FN + LN,
+  email: Email,
   photoURL: '/static/mock-images/avatars/avatar_default.jpg',
 };
 

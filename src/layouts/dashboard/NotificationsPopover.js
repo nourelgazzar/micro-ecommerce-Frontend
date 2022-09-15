@@ -160,7 +160,7 @@ export default function NotificationsPopover(props) {
                 fullWidth
                 disableRipple
                 onClick={() => {
-                  navigate('/oder');
+                  navigate('/user/oder');
                 }}
               >
                 Proceed to buy

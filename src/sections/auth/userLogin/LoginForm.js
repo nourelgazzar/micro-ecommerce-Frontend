@@ -48,7 +48,7 @@ export default function LoginForm() {
   } = methods;
 
   const onSubmit = async (data) => {
-    console.log(data.email, data.password);
+    console.log(data.email, data.password, 'pass');
     axios
       .get('http://localhost:8000/sanctum/csrf-cookie')
       .then((response) => {
@@ -73,8 +73,13 @@ export default function LoginForm() {
 
             if (response.status === 200) {
               localStorage.setItem('token', response.data.token);
-              navigate('/products');
-              console.log('Response : ', response);
+              localStorage.setItem('userID', response.data.admin.id);
+              localStorage.setItem('usernameF', response.data.admin.first_name);
+              localStorage.setItem('usernameL', response.data.admin.last_name);
+              localStorage.setItem('user', '1');
+              localStorage.setItem('email', response.data.admin.email);
+
+              navigate('/user/products');
             }
           })
           .catch((error) => {

@@ -1,12 +1,8 @@
 import PropTypes from 'prop-types';
 // material
 import { alpha, styled } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
-
 import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
 // components
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-
 import Iconify from '../../components/Iconify';
 //
 import Searchbar from './Searchbar';
@@ -53,7 +49,7 @@ export default function DashboardNavbar({
   totalItems,
   setTotalItems,
 }) {
-  const navigate = useNavigate();
+  const user = localStorage.get('user');
 
   return (
     <RootStyle>
@@ -65,13 +61,7 @@ export default function DashboardNavbar({
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-          <IconButton
-            onClick={() => {
-              navigate('/dashboard/app');
-            }}
-          >
-            <HomeOutlinedIcon sx={{ width: 30, height: 30 }} />
-          </IconButton>
+          {user === 1 && <NotificationsPopover totalPrice={totalPrice} totalItems={totalItems} />}
           <AccountPopover />
         </Stack>
       </ToolbarStyle>

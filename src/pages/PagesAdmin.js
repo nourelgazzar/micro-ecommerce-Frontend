@@ -37,7 +37,6 @@ export default function EcommerceShop(props) {
   const [addcart, setaddcart] = useState(false);
   const [product, setproduct] = useState({});
   const [tempcart, settempcart] = useState([]);
-  const userid = localStorage.getItem('userID');
 
   console.log(category, brand, price, 'TESTTTTTT');
 
@@ -48,114 +47,11 @@ export default function EcommerceShop(props) {
   const handleCloseFilter = () => {
     setOpenFilter(false);
   };
-  useEffect(() => {
-    if (addcart === true) {
-      // const price = props.totalPrice + quantity * product.price;
-      // props.settotalPrice(price);
-      // const items = props.totalItems + quantity;
-      // props.setTotalItems(items);
-      axios
-        .post(
-          `http://localhost:8000/api/user/carts/add`,
-          { cart_id: userid, product_id: product.id, no_items: quantity },
-          {
-            headers: {
-              Authorization: `Bearer  ${token}`,
-              'Access-Control-Allow-Origin': '*',
-              'Content-Type': 'application/json',
-              accept: 'application/json',
-            },
-          }
-        )
-        .then((response) => {
-          console.log(response, 'RESPONSEEEEEEEEEEEEEEEEE');
-
-          if (response.data.status === 200) {
-            console.log('innnnnnnnn');
-            console.log(response, 'RESPONSEEEEEEEEEEEEEEEEE');
-            let array = props.cart;
-            array = [...array, response.data.cart_detail];
-            settempcart(array);
-
-            setquantity(0);
-            setaddcart(false);
-          }
-        })
-        .catch((error) => {
-          console.log('Error : ', error);
-        });
-    }
-  }, [addcart]);
-
-  useEffect(() => {
-    axios
-      .get(
-        `http://localhost:8000/api/user/carts/${userid}`,
-
-        {
-          headers: {
-            Authorization: `Bearer  ${token}`,
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-            accept: 'application/json',
-          },
-        }
-      )
-      .then((response) => {
-        if (response.data.status === 200) {
-          console.log(response, 'RESSSSSSSS');
-          props.setCart(response.data.cart_details);
-          props.settotalPrice(response.data.total_price);
-          if (response.data.cart_details.length > 0) {
-            let ti = 0;
-            const newData = response.data.cart_details.filter((temp) => {
-              ti = temp.no_items + ti;
-              return temp;
-            });
-            props.setTotalItems(ti);
-          }
-        }
-      })
-      .catch((error) => {
-        console.log('Error : ', error);
-      });
-  }, [tempcart]);
 
   console.log(categories, 'CATTTTTTTT');
   useEffect(() => {
     axios
-      .get(
-        `http://localhost:8000/api/user/carts/${userid}`,
-
-        {
-          headers: {
-            Authorization: `Bearer  ${token}`,
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-            accept: 'application/json',
-          },
-        }
-      )
-      .then((response) => {
-        if (response.data.status === 200) {
-          console.log(response, 'RESSSSSSSS');
-          props.setCart(response.data.cart_details);
-          props.settotalPrice(response.data.total_price);
-          if (response.data.cart_details.length > 0) {
-            let ti = 0;
-            const newData = response.data.cart_details.filter((temp) => {
-              ti = temp.no_items + ti;
-              return temp;
-            });
-            props.setTotalItems(ti);
-          }
-        }
-      })
-      .catch((error) => {
-        console.log('Error : ', error);
-      });
-    axios
-      .get('http://localhost:8000/api/products', {
+      .get('http://localhost:8000/api/admin/products', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Access-Control-Allow-Origin': '*',
@@ -171,7 +67,7 @@ export default function EcommerceShop(props) {
       .catch((error) => {});
 
     axios
-      .get('http://localhost:8000/api/categories', {
+      .get('http://localhost:8000/api/admin/categories', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Access-Control-Allow-Origin': '*',
@@ -187,7 +83,7 @@ export default function EcommerceShop(props) {
       .catch((error) => {});
 
     axios
-      .get('http://localhost:8000/api/brands', {
+      .get('http://localhost:8000/api/admin/brands', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Access-Control-Allow-Origin': '*',
@@ -243,14 +139,6 @@ export default function EcommerceShop(props) {
           <Typography>No Products found</Typography>
         ) : ( */}
         <ProductList products={products} open={open} setopen={setopen} setproduct={setproduct} />
-
-        <ShowUpModel
-          open={open}
-          setopen={setopen}
-          setquantity={setquantity}
-          quantity={quantity}
-          setaddcart={setaddcart}
-        />
       </Container>
     </Page>
   );
